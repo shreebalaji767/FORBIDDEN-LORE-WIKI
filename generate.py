@@ -6,13 +6,13 @@ import random
 
 # ============================================================
 # FORBIDDEN LORE WIKI
-# COMPLETE STATIC-SITE GENERATOR
+# COMPLETE STATIC SITE GENERATOR
 # ============================================================
 
 OUTPUT_DIR = Path("site")
 OUTPUT_FILE = OUTPUT_DIR / "index.html"
 
-random.seed(742913)
+random.seed()
 
 
 # ============================================================
@@ -22,83 +22,131 @@ random.seed(742913)
 WORLDS = [
     {
         "name": "Elaria",
-        "era": "The Late Imperial Cycle",
+        "era": "Late Imperial Cycle",
         "status": "Fragmentary",
+        "origin": "Original World",
         "description": (
-            "A continent whose surviving histories contain several incompatible "
-            "chronologies. Royal records frequently contradict temple archives."
+            "A continent of imperial ruins, contradictory dynasties and "
+            "temples whose records disagree about the same centuries."
         ),
-        "keywords": ["empire", "chronology", "temples", "archives"],
+        "keywords": [
+            "empire",
+            "temples",
+            "chronology",
+            "dynasty",
+        ],
     },
     {
         "name": "Vael Taryn",
-        "era": "The River Kingdom Period",
+        "era": "River Kingdom Period",
         "status": "Documented",
+        "origin": "Original World",
         "description": (
-            "A river-dominated civilization remembered for merchant leagues, "
-            "fortified crossings and unusually detailed commercial records."
+            "A river civilization dominated by merchant leagues, fortified "
+            "crossings and trade routes that changed the political map."
         ),
-        "keywords": ["river", "merchant", "kingdom", "trade"],
+        "keywords": [
+            "river",
+            "merchant",
+            "kingdom",
+            "trade",
+        ],
     },
     {
         "name": "Ashen Realms",
         "era": "Post-Cataclysmic Age",
         "status": "Restricted",
+        "origin": "Original World",
         "description": (
-            "A collection of territories that survived an unnamed catastrophe. "
-            "Many maps disagree about the location of its former capitals."
+            "A broken collection of kingdoms surviving after a catastrophe "
+            "whose actual cause was removed from most surviving histories."
         ),
-        "keywords": ["cataclysm", "maps", "ruins", "survivors"],
+        "keywords": [
+            "cataclysm",
+            "ruins",
+            "survivors",
+            "forbidden history",
+        ],
     },
     {
         "name": "Kharad Vey",
         "era": "Third Crown Dynasty",
         "status": "Disputed",
+        "origin": "Original World",
         "description": (
-            "A mountain civilization whose royal succession records appear "
-            "to contain an intentionally removed generation."
+            "A mountain empire whose royal genealogies contain a deliberate "
+            "absence that has never been satisfactorily explained."
         ),
-        "keywords": ["mountains", "dynasty", "succession", "royalty"],
+        "keywords": [
+            "mountains",
+            "royalty",
+            "dynasty",
+            "succession",
+        ],
     },
     {
         "name": "Namaris",
         "era": "Age of Glass",
         "status": "Unverified",
+        "origin": "Original World",
         "description": (
-            "A coastal world described by travelers as a place where cities "
-            "were built around enormous translucent mineral formations."
+            "A coastal civilization surrounding enormous translucent mineral "
+            "formations whose origin remains unknown."
         ),
-        "keywords": ["coast", "glass", "cities", "minerals"],
+        "keywords": [
+            "glass",
+            "coast",
+            "mineral",
+            "architecture",
+        ],
     },
     {
         "name": "Orthell",
-        "era": "The Broken Calendar",
+        "era": "Broken Calendar",
         "status": "Fragmentary",
+        "origin": "Original World",
         "description": (
-            "An old civilization whose historians stopped using numbered years "
-            "after an unexplained astronomical event."
+            "An astronomical civilization that abandoned numbered years "
+            "after recording an event that should not have been possible."
         ),
-        "keywords": ["calendar", "astronomy", "historians", "years"],
+        "keywords": [
+            "astronomy",
+            "calendar",
+            "stars",
+            "history",
+        ],
     },
     {
         "name": "Serevan",
-        "era": "The Northern Campaigns",
+        "era": "Northern Campaigns",
         "status": "Restricted",
+        "origin": "Original World",
         "description": (
-            "A militarized federation whose surviving battlefield reports "
-            "frequently omit the names of defeated commanders."
+            "A militarized federation whose battlefield records repeatedly "
+            "omit the identity of one particular army."
         ),
-        "keywords": ["war", "federation", "military", "campaigns"],
+        "keywords": [
+            "war",
+            "military",
+            "federation",
+            "campaign",
+        ],
     },
     {
         "name": "Ilyr",
-        "era": "The First Maritime Age",
+        "era": "First Maritime Age",
         "status": "Unresolved",
+        "origin": "Original World",
         "description": (
-            "An island civilization known almost entirely through navigation "
-            "logs written by people who never claimed to have visited it."
+            "An island civilization known primarily through navigation logs "
+            "written by people who claimed never to have reached it."
         ),
-        "keywords": ["islands", "navigation", "sea", "logs"],
+        "keywords": [
+            "islands",
+            "navigation",
+            "sea",
+            "meridian",
+        ],
     },
 ]
 
@@ -112,39 +160,43 @@ CHARACTERS = [
         "name": "Nera Kesh",
         "world": "Ashen Realms",
         "role": "Cartographer",
-        "period": "Post-Cataclysmic Age",
+        "era": "Post-Cataclysmic Age",
+        "status": "Missing",
         "description": (
-            "A fictional mapmaker whose surviving charts contain coastlines "
-            "not found on any contemporary map."
+            "A mapmaker whose surviving charts contain coastlines absent "
+            "from every later geographical survey."
         ),
     },
     {
         "name": "Ilyan Voss",
         "world": "Elaria",
         "role": "Imperial Archivist",
-        "period": "Late Imperial Cycle",
+        "era": "Late Imperial Cycle",
+        "status": "Recorded",
         "description": (
-            "An archivist credited with preserving three contradictory versions "
-            "of the same imperial succession."
+            "An archivist credited with preserving three mutually "
+            "contradictory versions of an imperial succession."
         ),
     },
     {
         "name": "Seren Vale",
         "world": "Vael Taryn",
         "role": "Merchant-Prince",
-        "period": "River Kingdom Period",
+        "era": "River Kingdom Period",
+        "status": "Recorded",
         "description": (
-            "A fictional merchant ruler whose private ledgers mention a city "
-            "that does not appear on any surviving map."
+            "A merchant ruler whose private ledgers mention a city that "
+            "does not appear on any surviving map."
         ),
     },
     {
         "name": "Maer Oth",
         "world": "Kharad Vey",
         "role": "Royal Genealogist",
-        "period": "Third Crown Dynasty",
+        "era": "Third Crown Dynasty",
+        "status": "Disputed",
         "description": (
-            "The genealogist responsible for a royal lineage that contains "
+            "The genealogist responsible for a royal lineage containing "
             "a forty-two-year absence."
         ),
     },
@@ -152,39 +204,43 @@ CHARACTERS = [
         "name": "Tessa Arin",
         "world": "Namaris",
         "role": "Glasswright",
-        "period": "Age of Glass",
+        "era": "Age of Glass",
+        "status": "Unverified",
         "description": (
-            "A fictional artisan whose surviving notes describe structures "
-            "that appear impossible for the technology of her period."
+            "An artisan whose notes describe structures seemingly impossible "
+            "for the known technology of her civilization."
         ),
     },
     {
         "name": "Corven Dhal",
         "world": "Serevan",
         "role": "Field Commander",
-        "period": "Northern Campaigns",
+        "era": "Northern Campaigns",
+        "status": "Restricted",
         "description": (
-            "A commander whose battlefield reports repeatedly refer to an "
-            "unnamed unit identified only by a black geometric mark."
+            "A commander whose reports repeatedly mention an unnamed unit "
+            "identified only by a black geometric symbol."
         ),
     },
     {
         "name": "Oren Pell",
         "world": "Orthell",
         "role": "Astronomer",
-        "period": "Broken Calendar",
+        "era": "Broken Calendar",
+        "status": "Missing",
         "description": (
-            "An astronomer whose final surviving observation predicts an event "
-            "that appears to have occurred several centuries earlier."
+            "An astronomer whose final observation predicts an astronomical "
+            "event that appears to have occurred centuries earlier."
         ),
     },
     {
         "name": "Lysa Mer",
         "world": "Ilyr",
         "role": "Navigator",
-        "period": "First Maritime Age",
+        "era": "First Maritime Age",
+        "status": "Unknown",
         "description": (
-            "A navigator whose log contains precise coordinates for an island "
+            "A navigator whose log contains coordinates for an island "
             "that disappears from every later chart."
         ),
     },
@@ -198,12 +254,13 @@ CHARACTERS = [
 EVENTS = [
     {
         "name": "The Seven-Day Silence",
-        "year": "Uncertain",
+        "year": "Unknown",
         "world": "Elaria",
-        "type": "Historical anomaly",
+        "type": "Historical Anomaly",
+        "status": "Unresolved",
         "description": (
-            "A fictional period during which several independent archives "
-            "contain no surviving dated records."
+            "Six independent archives contain the same unexplained absence "
+            "of dated records."
         ),
     },
     {
@@ -211,9 +268,10 @@ EVENTS = [
         "year": "312 A.C.",
         "world": "Vael Taryn",
         "type": "Destruction",
+        "status": "Documented",
         "description": (
-            "A merchant archive reportedly disappeared during a fire that "
-            "destroyed only one building in an otherwise untouched district."
+            "A merchant archive vanished during a fire that destroyed "
+            "only one building in an otherwise untouched district."
         ),
     },
     {
@@ -221,38 +279,42 @@ EVENTS = [
         "year": "Unknown",
         "world": "Ashen Realms",
         "type": "Migration",
+        "status": "Fragmentary",
         "description": (
-            "A population movement referenced by five different settlements "
-            "but by no surviving government."
+            "A population movement referenced by several settlements "
+            "without a surviving government claiming responsibility."
         ),
     },
     {
         "name": "The Empty Coronation",
         "year": "Year 0",
         "world": "Kharad Vey",
-        "type": "Succession crisis",
+        "type": "Succession Crisis",
+        "status": "Disputed",
         "description": (
-            "A coronation recorded in ceremonial documents but absent from "
-            "every surviving royal genealogy."
+            "A coronation recorded by ceremonial documents but absent "
+            "from every surviving royal genealogy."
         ),
     },
     {
         "name": "The Glass Tide",
         "year": "Approx. 88 AG",
         "world": "Namaris",
-        "type": "Natural anomaly",
+        "type": "Natural Anomaly",
+        "status": "Unverified",
         "description": (
-            "A coastal event during which large mineral formations reportedly "
-            "appeared along several miles of shoreline."
+            "A coastal event during which enormous mineral formations "
+            "reportedly appeared along several miles of shoreline."
         ),
     },
     {
         "name": "The Last Calendar Night",
         "year": "Unknown",
         "world": "Orthell",
-        "type": "Astronomical event",
+        "type": "Astronomical Event",
+        "status": "Restricted",
         "description": (
-            "The final dated astronomical observation before the civilization "
+            "The final dated astronomical observation before Orthell "
             "abandoned conventional numbered years."
         ),
     },
@@ -260,7 +322,8 @@ EVENTS = [
         "name": "The Black Standard Campaign",
         "year": "641 N.C.",
         "world": "Serevan",
-        "type": "Military campaign",
+        "type": "Military Campaign",
+        "status": "Restricted",
         "description": (
             "A campaign described in official reports without identifying "
             "the force that supposedly commanded it."
@@ -268,11 +331,12 @@ EVENTS = [
     },
     {
         "name": "The Vanishing Meridian",
-        "year": "Uncertain",
+        "year": "Unknown",
         "world": "Ilyr",
-        "type": "Navigational anomaly",
+        "type": "Navigational Anomaly",
+        "status": "Unresolved",
         "description": (
-            "A sequence of navigation records that all terminate at nearly "
+            "A sequence of navigation records that terminate at nearly "
             "the same unexplained coordinate."
         ),
     },
@@ -287,25 +351,28 @@ FACTIONS = [
     {
         "name": "Kareth League",
         "world": "Vael Taryn",
-        "type": "Merchant alliance",
+        "type": "Merchant Alliance",
+        "status": "Documented",
         "description": (
-            "A fictional commercial coalition controlling several northern "
+            "A commercial coalition controlling several northern "
             "river crossings."
         ),
     },
     {
         "name": "Order of the Hollow Crown",
         "world": "Kharad Vey",
-        "type": "Royal institution",
+        "type": "Royal Institution",
+        "status": "Restricted",
         "description": (
-            "A ceremonial order responsible for preserving disputed succession "
-            "records."
+            "A ceremonial order responsible for preserving disputed "
+            "succession records."
         ),
     },
     {
         "name": "Ash Registry",
         "world": "Ashen Realms",
-        "type": "Archive network",
+        "type": "Archive Network",
+        "status": "Fragmentary",
         "description": (
             "A loose network of record keepers who catalogued settlements "
             "after the cataclysm."
@@ -314,26 +381,29 @@ FACTIONS = [
     {
         "name": "The Meridian Court",
         "world": "Ilyr",
-        "type": "Maritime authority",
+        "type": "Maritime Authority",
+        "status": "Unknown",
         "description": (
-            "A fictional authority mentioned only in navigation documents."
+            "A maritime authority mentioned only in navigation documents."
         ),
     },
     {
         "name": "Glasswright Compact",
         "world": "Namaris",
         "type": "Guild",
+        "status": "Documented",
         "description": (
-            "An artisan organization associated with the construction of "
-            "large translucent structures."
+            "An artisan organization associated with the construction "
+            "of enormous translucent structures."
         ),
     },
     {
         "name": "The Calendar Keepers",
         "world": "Orthell",
-        "type": "Scholarly order",
+        "type": "Scholarly Order",
+        "status": "Fragmentary",
         "description": (
-            "A group of astronomers and historians who preserved pre-Broken "
+            "Astronomers and historians who preserved pre-Broken "
             "Calendar records."
         ),
     },
@@ -349,7 +419,7 @@ ARTIFACTS = [
         "name": "The Black Meridian Map",
         "world": "Ashen Realms",
         "type": "Map",
-        "status": "Partially recovered",
+        "status": "Partially Recovered",
         "description": (
             "A map showing a coastline that appears nowhere in surviving "
             "geographical surveys."
@@ -358,41 +428,41 @@ ARTIFACTS = [
     {
         "name": "The Kareth Ledger",
         "world": "Vael Taryn",
-        "type": "Financial record",
+        "type": "Financial Record",
         "status": "Referenced",
         "description": (
-            "A commercial ledger believed to contain evidence of a missing "
-            "trade route."
+            "A merchant ledger believed to contain evidence of a "
+            "missing trade route."
         ),
     },
     {
         "name": "Crownless Seal",
         "world": "Kharad Vey",
-        "type": "Royal insignia",
-        "status": "Authenticity disputed",
+        "type": "Royal Insignia",
+        "status": "Disputed",
         "description": (
-            "A seal bearing the symbols of a monarch absent from official "
-            "royal succession lists."
+            "A seal bearing the symbols of a monarch absent from "
+            "official succession lists."
         ),
     },
     {
         "name": "The Ninth Star Lens",
         "world": "Orthell",
-        "type": "Astronomical instrument",
+        "type": "Astronomical Instrument",
         "status": "Unverified",
         "description": (
-            "A fictional instrument said to reveal an additional reference "
+            "An instrument said to reveal an additional reference "
             "point in the night sky."
         ),
     },
     {
         "name": "Glass Memory Tablet",
         "world": "Namaris",
-        "type": "Inscribed mineral",
+        "type": "Inscribed Mineral",
         "status": "Fragmentary",
         "description": (
-            "A translucent tablet containing writing visible only from "
-            "certain angles."
+            "A translucent tablet containing writing visible only "
+            "from certain angles."
         ),
     },
 ]
@@ -406,41 +476,41 @@ DOCUMENTS = [
     {
         "name": "The Ash Registry, Volume IV",
         "world": "Ashen Realms",
-        "type": "Administrative archive",
-        "condition": "Fragmentary",
+        "type": "Administrative Archive",
+        "status": "Fragmentary",
         "description": (
-            "A fictional registry containing population records from "
-            "settlements believed to have disappeared."
+            "A registry containing population records from settlements "
+            "believed to have disappeared."
         ),
     },
     {
         "name": "Ledger of the Northern Crossing",
         "world": "Vael Taryn",
-        "type": "Commercial document",
-        "condition": "Referenced only",
+        "type": "Commercial Document",
+        "status": "Referenced Only",
         "description": (
-            "A missing merchant ledger known through quotations in later "
-            "financial disputes."
+            "A missing merchant ledger known through quotations "
+            "in later financial disputes."
         ),
     },
     {
         "name": "Chronicle of the Empty Crown",
         "world": "Kharad Vey",
-        "type": "Royal chronicle",
-        "condition": "Disputed",
+        "type": "Royal Chronicle",
+        "status": "Disputed",
         "description": (
-            "A chronicle describing a succession event absent from official "
-            "genealogical records."
+            "A chronicle describing a succession event absent "
+            "from official genealogical records."
         ),
     },
     {
         "name": "The Last Meridian Log",
         "world": "Ilyr",
-        "type": "Navigation log",
-        "condition": "Partial",
+        "type": "Navigation Log",
+        "status": "Partial",
         "description": (
-            "A navigation document terminating at coordinates shared by "
-            "several unrelated voyages."
+            "A navigation document terminating at coordinates shared "
+            "by several unrelated voyages."
         ),
     },
 ]
@@ -452,28 +522,38 @@ DOCUMENTS = [
 
 QUESTIONS = [
     {
-        "question": "Why do six Elarian archives contain the same seven-day gap?",
+        "question": (
+            "Why do six Elarian archives contain the same seven-day gap?"
+        ),
         "status": "Unresolved",
         "related": "The Seven-Day Silence",
     },
     {
-        "question": "Who constructed the coastline shown on Nera Kesh's map?",
-        "status": "No accepted answer",
+        "question": (
+            "Who constructed the coastline shown on Nera Kesh's map?"
+        ),
+        "status": "No Accepted Answer",
         "related": "The Black Meridian Map",
     },
     {
-        "question": "Why was one royal generation removed from Kharad Vey records?",
+        "question": (
+            "Why was one royal generation removed from Kharad Vey records?"
+        ),
         "status": "Disputed",
         "related": "Order of the Hollow Crown",
     },
     {
-        "question": "Did the Vanishing Meridian represent a real location?",
+        "question": (
+            "Did the Vanishing Meridian represent a real location?"
+        ),
         "status": "Unverified",
         "related": "The Last Meridian Log",
     },
     {
-        "question": "Why did Orthell abandon numbered years?",
-        "status": "Multiple theories",
+        "question": (
+            "Why did Orthell abandon numbered years?"
+        ),
+        "status": "Multiple Theories",
         "related": "The Last Calendar Night",
     },
 ]
@@ -486,50 +566,66 @@ QUESTIONS = [
 REFERENCE_UNIVERSES = [
     {
         "name": "Anime",
+        "symbol": "ア",
         "description": (
-            "Reference category for Japanese animated fictional universes."
+            "Animated fictional worlds, characters, histories, powers, "
+            "organizations and mythologies originating from anime."
         ),
     },
     {
         "name": "Manhwa",
+        "symbol": "한",
         "description": (
-            "Reference category for Korean comics and their fictional settings."
+            "Korean comic worlds including fantasy kingdoms, modern "
+            "supernatural settings, martial worlds and serialized lore."
         ),
     },
     {
         "name": "Manhua",
+        "symbol": "漫",
         "description": (
-            "Reference category for Chinese comics and their fictional settings."
+            "Chinese comic universes spanning cultivation, mythology, "
+            "historical fantasy and supernatural fiction."
         ),
     },
     {
         "name": "Donghua",
+        "symbol": "动",
         "description": (
-            "Reference category for Chinese animated fictional universes."
+            "Chinese animated fictional worlds and their characters, "
+            "mythologies, factions and historical settings."
         ),
     },
     {
         "name": "Light Novels",
+        "symbol": "LN",
         "description": (
-            "Reference category for serialized Japanese light-novel fiction."
+            "Serialized literary worlds containing extensive character, "
+            "political, magical and chronological lore."
         ),
     },
     {
         "name": "Comics",
+        "symbol": "CM",
         "description": (
-            "Reference category covering major comic-book fictional universes."
+            "Comic-book universes containing fictional histories, "
+            "characters, organizations and alternate continuities."
         ),
     },
     {
         "name": "DC",
+        "symbol": "DC",
         "description": (
-            "Reference category for DC fictional universes and characters."
+            "Reference gateway for DC fictional universes and their "
+            "characters, events, worlds and mythologies."
         ),
     },
     {
         "name": "Marvel",
+        "symbol": "MV",
         "description": (
-            "Reference category for Marvel fictional universes and characters."
+            "Reference gateway for Marvel fictional universes and their "
+            "characters, events, worlds and mythologies."
         ),
     },
 ]
@@ -541,127 +637,134 @@ REFERENCE_UNIVERSES = [
 
 ARCHIVE_TYPES = [
     "Characters",
+    "Worlds",
     "Historical Events",
     "Factions",
     "Artifacts",
     "Documents",
-    "Worlds",
-    "Questions",
-    "Conflicts",
-    "Political Systems",
     "Locations",
     "Chronologies",
-    "Unresolved Records",
+    "Political Systems",
+    "Wars",
+    "Mythologies",
+    "Unresolved Mysteries",
 ]
 
 
 # ============================================================
-# THEMES
-# ============================================================
-
-THEMES = [
-    "theme-obsidian",
-    "theme-paper",
-    "theme-redacted",
-    "theme-cold",
-]
-
-
-# ============================================================
-# HELPERS
+# UTILITIES
 # ============================================================
 
 def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def record_id(prefix, index):
-    return f"{prefix.upper()}-{index + 1:03d}"
+def make_id(prefix, number):
+    return f"{prefix.upper()}-{number + 1:03d}"
 
+
+# ============================================================
+# SEARCH INDEX
+# ============================================================
 
 def build_search_data():
+
     records = []
 
-    for index, item in enumerate(WORLDS):
+    for i, item in enumerate(WORLDS):
+
         records.append(
             {
-                "id": record_id("WRL", index),
+                "id": make_id("WORLD", i),
                 "type": "World",
                 "name": item["name"],
                 "world": item["name"],
                 "status": item["status"],
+                "era": item["era"],
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(CHARACTERS):
+    for i, item in enumerate(CHARACTERS):
+
         records.append(
             {
-                "id": record_id("CHR", index),
+                "id": make_id("CHAR", i),
                 "type": "Character",
                 "name": item["name"],
                 "world": item["world"],
-                "status": "Archived",
+                "status": item["status"],
+                "era": item["era"],
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(EVENTS):
+    for i, item in enumerate(EVENTS):
+
         records.append(
             {
-                "id": record_id("EVT", index),
+                "id": make_id("EVENT", i),
                 "type": "Historical Event",
                 "name": item["name"],
                 "world": item["world"],
-                "status": "Archived",
+                "status": item["status"],
+                "era": item["year"],
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(FACTIONS):
+    for i, item in enumerate(FACTIONS):
+
         records.append(
             {
-                "id": record_id("FAC", index),
+                "id": make_id("FACTION", i),
                 "type": "Faction",
                 "name": item["name"],
                 "world": item["world"],
-                "status": "Archived",
+                "status": item["status"],
+                "era": "Unknown",
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(ARTIFACTS):
+    for i, item in enumerate(ARTIFACTS):
+
         records.append(
             {
-                "id": record_id("ART", index),
+                "id": make_id("ARTIFACT", i),
                 "type": "Artifact",
                 "name": item["name"],
                 "world": item["world"],
                 "status": item["status"],
+                "era": "Unknown",
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(DOCUMENTS):
+    for i, item in enumerate(DOCUMENTS):
+
         records.append(
             {
-                "id": record_id("DOC", index),
+                "id": make_id("DOCUMENT", i),
                 "type": "Document",
                 "name": item["name"],
                 "world": item["world"],
-                "status": item["condition"],
+                "status": item["status"],
+                "era": "Unknown",
                 "description": item["description"],
             }
         )
 
-    for index, item in enumerate(QUESTIONS):
+    for i, item in enumerate(QUESTIONS):
+
         records.append(
             {
-                "id": record_id("QST", index),
-                "type": "Unresolved Question",
+                "id": make_id("QUESTION", i),
+                "type": "Unresolved Mystery",
                 "name": item["question"],
                 "world": item["related"],
                 "status": item["status"],
+                "era": "Unknown",
                 "description": item["question"],
             }
         )
@@ -677,38 +780,52 @@ SEARCH_DATA = build_search_data()
 # ============================================================
 
 CSS = r"""
+/* ============================================================
+   FORBIDDEN LORE WIKI
+   OCCULT ENCYCLOPEDIA / CLASSIFIED CODEX UI
+   ============================================================ */
+
 :root {
-    --bg: #11110f;
-    --panel: #171713;
-    --panel-2: #1c1c17;
-    --paper: #d7d0bd;
-    --paper-dim: #aaa38f;
-    --paper-faint: #777363;
-    --line: rgba(215, 208, 189, 0.20);
-    --line-strong: rgba(215, 208, 189, 0.42);
-    --red: #8f302d;
-    --red-bright: #b64a44;
-    --yellow: #b49a55;
-    --green: #6e8b69;
-    --shadow: rgba(0, 0, 0, 0.55);
+    --void: #080807;
+    --black: #0d0c0a;
+    --ink: #15130f;
+    --ink-2: #1b1813;
+
+    --bone: #e4dcc7;
+    --bone-soft: #b9b09a;
+    --bone-dim: #776f60;
+
+    --blood: #8d2828;
+    --blood-light: #bd4843;
+
+    --gold: #ad8c48;
+    --gold-light: #d1b66b;
+
+    --ash: #46423a;
+
+    --green: #667c5d;
+
+    --line: rgba(228,220,199,0.17);
+    --line-strong: rgba(228,220,199,0.34);
 
     --serif: Georgia, "Times New Roman", serif;
     --sans: Arial, Helvetica, sans-serif;
-    --mono: "Courier New", Courier, monospace;
+    --mono: "Courier New", monospace;
 }
 
-*,
-*::before,
-*::after {
+
+* {
     box-sizing: border-box;
 }
 
+
 html {
     min-width: 320px;
-    background: var(--bg);
-    color: var(--paper);
+    background: var(--void);
+    color: var(--bone);
     scroll-behavior: smooth;
 }
+
 
 body {
     margin: 0;
@@ -717,79 +834,90 @@ body {
 
     background:
         radial-gradient(
-            circle at 15% 10%,
-            rgba(255,255,255,0.025),
-            transparent 25%
+            ellipse at 50% -20%,
+            rgba(141,40,40,0.10),
+            transparent 45%
         ),
         radial-gradient(
-            circle at 80% 70%,
-            rgba(143,48,45,0.035),
-            transparent 30%
+            ellipse at 10% 80%,
+            rgba(173,140,72,0.045),
+            transparent 35%
         ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,0.012) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            rgba(255,255,255,0.008) 1px,
-            transparent 1px
-        ),
-        var(--bg);
-
-    background-size:
-        auto,
-        auto,
-        37px 37px,
-        37px 37px,
-        auto;
+        #080807;
 
     font-family: var(--sans);
 }
 
+
 body::before {
     content: "";
+
     position: fixed;
     inset: 0;
+
     pointer-events: none;
     z-index: 9999;
 
-    opacity: 0.08;
+    opacity: .08;
 
     background:
         repeating-linear-gradient(
             0deg,
-            rgba(255,255,255,0.04) 0,
-            rgba(255,255,255,0.04) 1px,
-            transparent 1px,
-            transparent 4px
+            transparent 0,
+            transparent 3px,
+            rgba(255,255,255,.05) 4px
         );
 
     mix-blend-mode: overlay;
 }
+
+
+body::after {
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: .035;
+
+    background-image:
+        radial-gradient(
+            circle at 20% 30%,
+            #fff 0 1px,
+            transparent 1px
+        );
+
+    background-size: 13px 13px;
+}
+
 
 button,
 input {
     font: inherit;
 }
 
+
 button {
     color: inherit;
 }
 
+
 ::selection {
-    background: var(--red);
-    color: white;
+    color: #fff;
+    background: var(--blood);
 }
 
 
 /* ============================================================
-   OUTER FRAME
+   MASTER FRAME
    ============================================================ */
 
-.archive-shell {
-    width: min(1600px, 100%);
+.lore-frame {
+    width: min(1720px, 100%);
     min-height: 100vh;
+
     margin: 0 auto;
 
     border-left: 1px solid var(--line);
@@ -798,182 +926,355 @@ button {
 
 
 /* ============================================================
-   TOP BAR
+   HEADER
    ============================================================ */
 
-.archive-topline {
-    min-height: 44px;
+.lore-header {
+    min-height: 76px;
 
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-
-    align-items: stretch;
+    grid-template-columns: 1fr auto;
 
     border-bottom: 1px solid var(--line-strong);
 
-    background: rgba(6,6,5,0.88);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.018),
+            transparent 55%
+        ),
+        #0c0b09;
 }
 
-.archive-brand {
-    min-width: 0;
 
+.brand-area {
     display: flex;
     align-items: center;
 
-    padding: 10px 18px;
+    padding: 14px 24px;
+}
 
-    overflow: hidden;
+
+.brand-mark {
+    position: relative;
+
+    width: 39px;
+    height: 39px;
+
+    margin-right: 13px;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid var(--gold);
+
+    color: var(--gold-light);
+
+    font-family: var(--serif);
+    font-size: 18px;
+
+    transform: rotate(45deg);
+}
+
+
+.brand-mark span {
+    transform: rotate(-45deg);
+}
+
+
+.brand-copy {
+    min-width: 0;
+}
+
+
+.brand-title {
+    margin: 0;
+
+    color: var(--bone);
+
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: normal;
+
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+
+.brand-subtitle {
+    margin-top: 4px;
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-size: 8px;
+
+    letter-spacing: .17em;
     text-transform: uppercase;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
-.archive-edition,
-.archive-status {
+
+.header-right {
     display: flex;
-    align-items: center;
+    align-items: stretch;
+}
+
+
+.header-cell {
+    min-width: 125px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     padding: 10px 16px;
 
     border-left: 1px solid var(--line);
-
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    white-space: nowrap;
 }
 
-.archive-status::before {
-    content: "";
 
-    width: 7px;
-    height: 7px;
+.header-label {
+    margin-bottom: 4px;
 
-    margin-right: 8px;
+    color: var(--bone-dim);
 
-    border-radius: 50%;
+    font-family: var(--mono);
+    font-size: 7px;
 
-    background: var(--green);
+    letter-spacing: .17em;
+    text-transform: uppercase;
+}
 
-    box-shadow:
-        0 0 10px rgba(110,139,105,0.4);
+
+.header-value {
+    color: var(--bone-soft);
+
+    font-family: var(--mono);
+    font-size: 9px;
+
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+
+.header-status {
+    color: var(--green);
 }
 
 
 /* ============================================================
-   BODY GRID
+   MAIN NAV
    ============================================================ */
 
-.archive-body {
-    display: grid;
-    grid-template-columns: 238px minmax(0,1fr);
+.lore-nav {
+    min-height: 40px;
 
-    min-height: calc(100vh - 44px);
+    display: flex;
+    align-items: center;
+
+    border-bottom: 1px solid var(--line);
+
+    background: #0b0a08;
+
+    overflow-x: auto;
 }
 
-.archive-sidebar {
+
+.nav-item {
+    flex: 0 0 auto;
+
+    padding: 12px 17px;
+
+    border: 0;
+    border-right: 1px solid var(--line);
+
+    background: transparent;
+
+    color: var(--bone-dim);
+
+    font-family: var(--mono);
+    font-size: 8px;
+
+    letter-spacing: .13em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+}
+
+
+.nav-item:first-child {
+    border-left: 1px solid var(--line);
+}
+
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--bone);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(141,40,40,.14),
+            transparent
+        );
+}
+
+
+.nav-item.active {
+    box-shadow: inset 0 -2px var(--blood);
+}
+
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+.lore-body {
+    display: grid;
+    grid-template-columns: 250px minmax(0,1fr);
+
+    min-height: calc(100vh - 116px);
+}
+
+
+/* ============================================================
+   LEFT CODEX INDEX
+   ============================================================ */
+
+.codex-sidebar {
     border-right: 1px solid var(--line-strong);
 
     background:
         linear-gradient(
             180deg,
-            rgba(255,255,255,0.018),
-            transparent 25%
+            rgba(255,255,255,.018),
+            transparent 30%
         ),
-        rgba(7,7,6,0.75);
+        #0d0c0a;
 }
 
-.sidebar-inner {
+
+.codex-sidebar-inner {
     position: sticky;
     top: 0;
 
     max-height: 100vh;
+
     overflow-y: auto;
-
-    padding: 17px 0 25px;
 }
 
-.sidebar-section {
-    margin-bottom: 15px;
-    padding: 0 14px 16px;
 
-    border-bottom: 1px solid var(--line);
-}
+.sidebar-heading {
+    padding: 17px 17px 10px;
 
-.sidebar-label {
-    margin-bottom: 8px;
-
-    color: var(--paper-faint);
+    color: var(--gold-light);
 
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.18em;
+    font-size: 8px;
+
+    letter-spacing: .2em;
     text-transform: uppercase;
 }
 
-.sidebar-nav {
+
+.sidebar-rule {
+    height: 1px;
+
+    margin: 0 17px 10px;
+
+    background: var(--line);
+}
+
+
+.codex-list {
     display: flex;
     flex-direction: column;
 }
 
-.sidebar-link {
+
+.codex-button {
+    position: relative;
+
     width: 100%;
 
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-
-    padding: 6px;
+    padding: 8px 17px;
 
     border: 0;
 
     background: transparent;
 
-    color: var(--paper-dim);
+    color: var(--bone-dim);
 
     text-align: left;
 
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.05em;
+    font-size: 9px;
+
+    letter-spacing: .04em;
 
     cursor: pointer;
-
-    transition:
-        background 120ms ease,
-        color 120ms ease,
-        padding-left 120ms ease;
 }
 
-.sidebar-link::before {
-    content: "/";
-    color: var(--paper-faint);
+
+.codex-button::before {
+    content: "◇";
+
+    margin-right: 8px;
+
+    color: var(--ash);
 }
 
-.sidebar-link:hover,
-.sidebar-link.active {
-    padding-left: 11px;
 
-    background: rgba(215,208,189,0.055);
+.codex-button:hover,
+.codex-button.active {
+    color: var(--bone);
 
-    color: var(--paper);
+    background: rgba(228,220,199,.035);
 }
 
-.sidebar-link.active {
-    border-left: 2px solid var(--red);
+
+.codex-button:hover::before,
+.codex-button.active::before {
+    color: var(--blood-light);
 }
 
-.sidebar-ref {
-    color: var(--paper-faint);
+
+.sidebar-note {
+    margin: 17px;
+
+    padding: 13px;
+
+    border: 1px solid var(--line);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(173,140,72,.04),
+            transparent
+        );
+}
+
+
+.sidebar-note-title {
+    margin-bottom: 8px;
+
+    color: var(--bone-soft);
 
     font-family: var(--mono);
-    font-size: 9px;
-    line-height: 1.65;
+    font-size: 8px;
+
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+
+.sidebar-note-text {
+    color: var(--bone-dim);
+
+    font-family: var(--serif);
+    font-size: 12px;
+
+    line-height: 1.55;
 }
 
 
@@ -981,82 +1282,163 @@ button {
    CONTENT
    ============================================================ */
 
-.archive-content {
+.lore-content {
     min-width: 0;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0,
+            rgba(228,220,199,.025),
+            transparent 35%
+        );
 }
 
-.content-toolbar {
-    min-height: 49px;
+
+/* ============================================================
+   CONTENT COMMAND BAR
+   ============================================================ */
+
+.command-bar {
+    min-height: 46px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    gap: 14px;
+    gap: 12px;
 
     padding: 8px 18px;
 
     border-bottom: 1px solid var(--line);
 
-    background: rgba(15,15,13,0.82);
+    background: rgba(7,7,6,.70);
 }
 
-.breadcrumb {
+
+.command-path {
     min-width: 0;
 
     overflow: hidden;
 
-    color: var(--paper-faint);
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.08em;
+    font-size: 8px;
+
+    letter-spacing: .08em;
     text-transform: uppercase;
+
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.breadcrumb strong {
-    color: var(--paper-dim);
+
+.command-path strong {
+    color: var(--bone-soft);
 }
 
-.toolbar-actions {
+
+.command-actions {
     display: flex;
-    gap: 6px;
+
+    flex: 0 0 auto;
+
+    gap: 5px;
 }
 
-.toolbar-button,
-.mobile-menu-button {
+
+.command-button {
+    padding: 7px 10px;
+
     border: 1px solid var(--line);
 
     background: transparent;
 
-    color: var(--paper-dim);
-
-    padding: 7px 10px;
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.08em;
+    font-size: 8px;
+
+    letter-spacing: .08em;
     text-transform: uppercase;
 
     cursor: pointer;
 }
 
-.toolbar-button:hover,
-.mobile-menu-button:hover {
-    border-color: var(--line-strong);
-    color: var(--paper);
 
-    background: rgba(215,208,189,0.04);
+.command-button:hover {
+    border-color: var(--line-strong);
+
+    color: var(--bone);
+
+    background: rgba(228,220,199,.035);
 }
 
-.mobile-menu-button {
+
+.mobile-index {
     display: none;
 }
 
-.record-stage {
-    padding: 23px;
+
+/* ============================================================
+   HERO / DISCOVERY
+   ============================================================ */
+
+.lore-stage {
+    padding: 24px;
+}
+
+
+.codex-page {
+    position: relative;
+
+    border: 1px solid var(--line-strong);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(228,220,199,.018),
+            transparent 30%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(173,140,72,.025),
+            transparent 20%
+        ),
+        #11100d;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.28);
+}
+
+
+.codex-page::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 52px;
+
+    width: 1px;
+
+    background: rgba(141,40,40,.16);
+
+    pointer-events: none;
+}
+
+
+.codex-page::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 9px;
+
+    border: 1px solid rgba(228,220,199,.035);
+
+    pointer-events: none;
 }
 
 
@@ -1064,139 +1446,197 @@ button {
    RECORD HEADER
    ============================================================ */
 
-.record-header {
+.record-hero {
     position: relative;
 
-    padding: 23px 24px 20px;
+    padding: 38px 48px 30px 72px;
 
-    border-top: 1px solid var(--line-strong);
     border-bottom: 1px solid var(--line-strong);
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(215,208,189,0.022),
-            transparent 65%
-        ),
-        rgba(19,19,16,0.70);
 }
 
-.record-header::after {
-    content: "ARCHIVAL COPY";
 
+.record-seal {
     position: absolute;
-    top: 18px;
-    right: 22px;
 
-    padding: 5px 8px;
+    top: 27px;
+    right: 31px;
 
-    border: 1px solid rgba(143,48,45,0.55);
+    width: 74px;
+    height: 74px;
 
-    color: rgba(182,74,68,0.80);
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(141,40,40,.7);
+
+    color: var(--blood-light);
 
     font-family: var(--mono);
     font-size: 8px;
-    letter-spacing: 0.18em;
 
-    transform: rotate(-2deg);
+    letter-spacing: .12em;
+    text-align: center;
+
+    border-radius: 50%;
+
+    transform: rotate(-8deg);
 }
 
-.record-kicker {
-    margin-bottom: 12px;
 
-    color: var(--paper-faint);
+.record-seal::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 6px;
+
+    border: 1px solid rgba(141,40,40,.35);
+
+    border-radius: 50%;
+}
+
+
+.record-kicker {
+    margin-bottom: 13px;
+
+    color: var(--gold);
 
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.18em;
+    font-size: 8px;
+
+    letter-spacing: .23em;
     text-transform: uppercase;
 }
 
+
 .record-title {
-    max-width: 1050px;
+    max-width: 850px;
 
     margin: 0;
 
-    color: var(--paper);
+    color: var(--bone);
 
     font-family: var(--serif);
-    font-size: clamp(34px,5vw,68px);
+    font-size: clamp(38px,6vw,82px);
+
     font-weight: normal;
 
-    line-height: 0.98;
-    letter-spacing: -0.035em;
+    line-height: .92;
+
+    letter-spacing: -.045em;
 }
 
+
 .record-subtitle {
-    max-width: 900px;
+    max-width: 800px;
 
-    margin: 15px 0 0;
+    margin: 17px 0 0;
 
-    color: var(--paper-dim);
+    color: var(--bone-soft);
+
+    font-family: var(--serif);
+    font-size: 17px;
+
+    line-height: 1.5;
+}
+
+
+.record-origin {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-top: 22px;
+}
+
+
+.origin-tag {
+    padding: 5px 8px;
+
+    border: 1px solid var(--line);
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 10px;
-    line-height: 1.65;
-    letter-spacing: 0.07em;
+    font-size: 7px;
+
+    letter-spacing: .12em;
     text-transform: uppercase;
 }
 
-.record-meta {
+
+/* ============================================================
+   META STRIP
+   ============================================================ */
+
+.record-metadata {
     display: grid;
-    grid-template-columns: repeat(4,minmax(0,1fr));
+    grid-template-columns:
+        minmax(100px,1fr)
+        minmax(100px,1fr)
+        minmax(100px,1fr)
+        minmax(100px,1fr)
+        minmax(100px,1fr);
 
-    margin-top: 23px;
+    border-bottom: 1px solid var(--line-strong);
 
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    background: rgba(0,0,0,.16);
 }
 
-.meta-cell {
+
+.meta-item {
     min-width: 0;
 
-    padding: 11px 13px;
+    padding: 12px 14px;
 
     border-right: 1px solid var(--line);
 }
 
-.meta-cell:last-child {
+
+.meta-item:last-child {
     border-right: 0;
 }
+
 
 .meta-label {
     display: block;
 
     margin-bottom: 5px;
 
-    color: var(--paper-faint);
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.13em;
+    font-size: 7px;
+
+    letter-spacing: .15em;
     text-transform: uppercase;
 }
+
 
 .meta-value {
     display: block;
 
-    color: var(--paper);
+    color: var(--bone-soft);
 
     font-family: var(--mono);
-    font-size: 10px;
-    line-height: 1.4;
+    font-size: 9px;
+
+    line-height: 1.35;
+
+    word-break: break-word;
 }
 
 
 /* ============================================================
-   RECORD GRID
+   RECORD BODY
    ============================================================ */
 
-.record-grid {
+.record-layout {
     display: grid;
-    grid-template-columns: minmax(0,1fr) 270px;
-
-    border-bottom: 1px solid var(--line-strong);
+    grid-template-columns: minmax(0,1fr) 285px;
 }
+
 
 .record-main {
     min-width: 0;
@@ -1204,66 +1644,85 @@ button {
     border-right: 1px solid var(--line-strong);
 }
 
-.record-aside {
-    min-width: 0;
 
-    background: rgba(7,7,6,0.28);
-}
+.lore-section {
+    position: relative;
 
-.archive-block {
-    padding: 21px 23px;
+    padding: 25px 34px 25px 72px;
 
     border-bottom: 1px solid var(--line);
 }
 
-.archive-block:last-child {
+
+.lore-section:last-child {
     border-bottom: 0;
 }
 
-.block-heading {
+
+.section-number {
+    position: absolute;
+
+    top: 27px;
+    left: 17px;
+
+    color: var(--ash);
+
+    font-family: var(--mono);
+    font-size: 9px;
+}
+
+
+.section-heading {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
 
-    gap: 12px;
+    gap: 15px;
 
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
-.block-title {
+
+.section-title {
     margin: 0;
 
-    color: var(--paper);
+    color: var(--bone);
 
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
+
     font-weight: normal;
-    letter-spacing: 0.13em;
+
+    letter-spacing: .17em;
     text-transform: uppercase;
 }
 
-.block-code {
-    color: var(--paper-faint);
+
+.section-code {
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
+    font-size: 7px;
 
     white-space: nowrap;
 }
 
-.archive-text {
-    max-width: 900px;
+
+.lore-paragraph {
+    max-width: 880px;
 
     margin: 0;
 
-    color: var(--paper-dim);
+    color: var(--bone-soft);
 
     font-family: var(--serif);
     font-size: 16px;
-    line-height: 1.72;
+
+    line-height: 1.75;
 }
 
-.archive-text + .archive-text {
+
+.lore-paragraph + .lore-paragraph {
     margin-top: 13px;
 }
 
@@ -1272,39 +1731,90 @@ button {
    CLASSIFICATION
    ============================================================ */
 
-.classification-box {
-    display: inline-block;
+.classification {
+    display: grid;
+    grid-template-columns: 170px minmax(0,1fr);
 
-    min-width: 205px;
-
-    margin: 2px 0 4px;
-
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
 }
 
-.classification-heading {
-    padding: 7px 10px;
 
-    border-bottom: 1px solid var(--line);
+.classification-label {
+    padding: 12px;
 
-    color: var(--paper-faint);
+    border-right: 1px solid var(--line);
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
     font-size: 8px;
-    letter-spacing: 0.16em;
+
+    letter-spacing: .1em;
     text-transform: uppercase;
 }
 
-.classification-value {
-    padding: 10px;
 
-    color: var(--red-bright);
+.classification-value {
+    padding: 12px;
+
+    color: var(--blood-light);
 
     font-family: var(--mono);
-    font-size: 15px;
+    font-size: 11px;
+
     font-weight: bold;
-    letter-spacing: 0.10em;
+
+    letter-spacing: .13em;
     text-transform: uppercase;
+}
+
+
+/* ============================================================
+   LORE QUOTE
+   ============================================================ */
+
+.lore-quote {
+    position: relative;
+
+    margin: 0;
+
+    padding: 19px 22px;
+
+    border-left: 3px solid var(--gold);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(173,140,72,.055),
+            transparent
+        );
+
+    color: var(--bone-soft);
+
+    font-family: var(--serif);
+    font-size: 17px;
+
+    font-style: italic;
+
+    line-height: 1.65;
+}
+
+
+.lore-quote::before {
+    content: "ARCHIVIST MARGIN";
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--gold);
+
+    font-family: var(--mono);
+    font-size: 7px;
+
+    font-style: normal;
+
+    letter-spacing: .18em;
 }
 
 
@@ -1312,7 +1822,7 @@ button {
    REFERENCES
    ============================================================ */
 
-.reference-list {
+.reference-grid {
     display: grid;
     grid-template-columns: repeat(2,minmax(0,1fr));
 
@@ -1320,171 +1830,232 @@ button {
     border-left: 1px solid var(--line);
 }
 
-.reference-item {
+
+.reference {
     min-width: 0;
 
-    padding: 9px 10px;
+    padding: 12px;
 
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
 
     cursor: pointer;
-
-    transition: background 120ms ease;
 }
 
-.reference-item:hover {
-    background: rgba(215,208,189,0.045);
+
+.reference:hover {
+    background: rgba(228,220,199,.035);
 }
+
 
 .reference-id {
     display: block;
 
-    color: var(--yellow);
+    color: var(--gold);
 
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 7px;
+
+    letter-spacing: .09em;
 }
 
-.reference-name {
+
+.reference-title {
     display: block;
 
-    margin-top: 3px;
+    margin-top: 5px;
 
-    color: var(--paper-dim);
+    color: var(--bone-soft);
 
     font-family: var(--serif);
-    font-size: 13px;
+    font-size: 14px;
+
     line-height: 1.3;
 }
 
 
 /* ============================================================
-   ASIDE
+   SIDE LORE PANEL
    ============================================================ */
 
-.aside-block {
-    padding: 17px 15px;
+.record-aside {
+    min-width: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,.16),
+            rgba(173,140,72,.018)
+        );
+}
+
+
+.aside-section {
+    padding: 18px;
 
     border-bottom: 1px solid var(--line);
 }
 
-.aside-label {
-    margin-bottom: 8px;
 
-    color: var(--paper-faint);
+.aside-heading {
+    margin-bottom: 10px;
+
+    color: var(--gold);
 
     font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.16em;
+    font-size: 7px;
+
+    letter-spacing: .18em;
     text-transform: uppercase;
 }
+
 
 .aside-value {
-    color: var(--paper-dim);
+    color: var(--bone-soft);
 
-    font-family: var(--mono);
-    font-size: 10px;
-    line-height: 1.55;
+    font-family: var(--serif);
+    font-size: 14px;
+
+    line-height: 1.5;
 }
 
-.stamp {
-    display: inline-block;
 
-    padding: 5px 7px;
-
-    border: 1px solid var(--red);
-
-    color: var(--red-bright);
+.aside-mono {
+    color: var(--bone-dim);
 
     font-family: var(--mono);
     font-size: 8px;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
 
-    transform: rotate(-1deg);
+    line-height: 1.7;
 }
 
-.margin-note {
-    padding: 11px;
 
-    border-left: 2px solid var(--yellow);
+.status-seal {
+    display: inline-flex;
+    align-items: center;
 
-    background: rgba(180,154,85,0.035);
+    padding: 7px 9px;
 
-    color: var(--paper-dim);
+    border: 1px solid var(--blood);
+
+    color: var(--blood-light);
+
+    font-family: var(--mono);
+    font-size: 8px;
+
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+
+.world-symbol {
+    width: 58px;
+    height: 58px;
+
+    display: grid;
+    place-items: center;
+
+    margin-bottom: 11px;
+
+    border: 1px solid var(--gold);
+
+    color: var(--gold-light);
 
     font-family: var(--serif);
-    font-size: 13px;
-    font-style: italic;
-    line-height: 1.55;
+    font-size: 21px;
+
+    transform: rotate(45deg);
 }
 
-.redacted-line {
-    display: inline;
 
-    padding: 0 4px;
-
-    background: #050504;
-    color: #050504;
-
-    user-select: none;
+.world-symbol span {
+    transform: rotate(-45deg);
 }
 
-.redacted-line:hover {
-    color: var(--paper-dim);
+
+.aside-list {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+
+.aside-list li {
+    padding: 7px 0;
+
+    border-bottom: 1px dotted var(--line);
+
+    color: var(--bone-dim);
+
+    font-family: var(--mono);
+    font-size: 8px;
+
+    line-height: 1.45;
+}
+
+
+.aside-list li:last-child {
+    border-bottom: 0;
 }
 
 
 /* ============================================================
-   DISCOVERY
+   DISCOVERY FOOTER
    ============================================================ */
 
-.discovery-strip {
+.discovery-bar {
     display: grid;
     grid-template-columns: repeat(3,minmax(0,1fr));
 
-    border-bottom: 1px solid var(--line-strong);
+    border-top: 1px solid var(--line-strong);
 }
 
-.discovery-cell {
+
+.discovery-item {
     min-width: 0;
 
-    padding: 17px 18px;
+    padding: 16px 18px;
 
     border-right: 1px solid var(--line);
 }
 
-.discovery-cell:last-child {
+
+.discovery-item:last-child {
     border-right: 0;
 }
 
-.discovery-label {
-    margin-bottom: 7px;
 
-    color: var(--paper-faint);
+.discovery-label {
+    margin-bottom: 6px;
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.15em;
+    font-size: 7px;
+
+    letter-spacing: .16em;
     text-transform: uppercase;
 }
 
+
 .discovery-value {
-    color: var(--paper);
+    color: var(--bone-soft);
 
     font-family: var(--serif);
-    font-size: 17px;
-    line-height: 1.25;
+    font-size: 15px;
+
+    line-height: 1.35;
 }
 
-.discovery-small {
-    margin-top: 5px;
 
-    color: var(--paper-faint);
+.discovery-small {
+    margin-top: 4px;
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
+    font-size: 7px;
 }
 
 
@@ -1496,133 +2067,164 @@ button {
     position: fixed;
     inset: 0;
 
-    z-index: 900;
+    z-index: 800;
 
     display: none;
     align-items: flex-start;
     justify-content: center;
 
-    padding: 10vh 18px 30px;
+    padding: 9vh 18px 30px;
 
-    background: rgba(4,4,3,0.92);
+    background: rgba(3,3,2,.94);
 
-    backdrop-filter: blur(7px);
+    backdrop-filter: blur(8px);
 }
+
 
 .search-overlay.open {
     display: flex;
 }
 
-.search-panel {
-    width: min(850px,100%);
+
+.search-window {
+    width: min(920px,100%);
 
     border: 1px solid var(--line-strong);
 
-    background: #11110f;
+    background: #0d0c0a;
 
-    box-shadow: 0 30px 90px var(--shadow);
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.65);
 }
 
-.search-top {
+
+.search-titlebar {
     display: flex;
     align-items: center;
 
     border-bottom: 1px solid var(--line);
 }
 
+
+.search-icon {
+    padding: 15px;
+
+    color: var(--blood-light);
+
+    font-family: var(--mono);
+    font-size: 10px;
+}
+
+
 .search-input {
     flex: 1;
 
     min-width: 0;
 
-    padding: 17px;
+    padding: 15px 5px;
 
     border: 0;
     outline: 0;
 
     background: transparent;
 
-    color: var(--paper);
+    color: var(--bone);
 
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 11px;
 }
+
 
 .search-input::placeholder {
-    color: var(--paper-faint);
+    color: var(--bone-dim);
 }
 
+
 .search-close {
-    padding: 17px;
+    padding: 15px;
 
     border: 0;
     border-left: 1px solid var(--line);
 
     background: transparent;
 
-    color: var(--paper-faint);
-
-    cursor: pointer;
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 8px;
+
+    cursor: pointer;
 }
 
+
+.search-close:hover {
+    color: var(--bone);
+}
+
+
 .search-results {
-    max-height: 65vh;
+    max-height: 66vh;
 
     overflow-y: auto;
 }
 
+
 .search-result {
     display: grid;
-    grid-template-columns: 85px minmax(0,1fr);
+    grid-template-columns: 100px minmax(0,1fr);
 
-    gap: 12px;
+    gap: 15px;
 
-    padding: 12px 16px;
+    padding: 14px 16px;
 
     border-bottom: 1px solid var(--line);
 
     cursor: pointer;
 }
 
+
 .search-result:hover {
-    background: rgba(215,208,189,0.045);
+    background: rgba(228,220,199,.035);
 }
+
 
 .search-result-id {
-    color: var(--yellow);
+    color: var(--gold);
 
     font-family: var(--mono);
     font-size: 8px;
 }
 
-.search-result-title {
-    color: var(--paper);
+
+.search-result-name {
+    color: var(--bone);
 
     font-family: var(--serif);
-    font-size: 16px;
+    font-size: 17px;
 }
+
 
 .search-result-meta {
-    margin-top: 3px;
+    margin-top: 4px;
 
-    color: var(--paper-faint);
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
+    font-size: 7px;
 
+    letter-spacing: .08em;
     text-transform: uppercase;
 }
+
 
 .search-result-description {
     margin-top: 7px;
 
-    color: var(--paper-dim);
+    color: var(--bone-soft);
 
     font-family: var(--serif);
     font-size: 12px;
+
     line-height: 1.45;
 }
 
@@ -1640,53 +2242,33 @@ button {
    FOOTER
    ============================================================ */
 
-.archive-footer {
+.lore-footer {
     display: grid;
-    grid-template-columns: minmax(0,1fr) auto;
+    grid-template-columns: 1fr auto;
 
     gap: 20px;
 
-    padding: 15px 18px;
+    padding: 16px 19px;
 
     border-top: 1px solid var(--line-strong);
 
-    color: var(--paper-faint);
+    background: #090908;
+
+    color: var(--bone-dim);
 
     font-family: var(--mono);
-    font-size: 8px;
-    line-height: 1.6;
+    font-size: 7px;
 
-    letter-spacing: 0.05em;
+    letter-spacing: .07em;
+
+    line-height: 1.7;
+
     text-transform: uppercase;
 }
 
-.archive-footer-right {
+
+.footer-right {
     text-align: right;
-}
-
-
-/* ============================================================
-   THEMES
-   ============================================================ */
-
-.theme-paper {
-    --bg: #201f1a;
-    --panel: #25231d;
-    --panel-2: #29271f;
-    --paper: #d9cfb9;
-}
-
-.theme-redacted {
-    --red: #9f3935;
-    --red-bright: #c24c45;
-}
-
-.theme-cold {
-    --paper: #c8d0d0;
-    --paper-dim: #9ea8a8;
-    --paper-faint: #6d7777;
-    --line: rgba(200,208,208,0.18);
-    --line-strong: rgba(200,208,208,0.37);
 }
 
 
@@ -1694,39 +2276,31 @@ button {
    TABLET
    ============================================================ */
 
-@media (max-width: 1050px) {
+@media (max-width: 1100px) {
 
-    .archive-body {
-        grid-template-columns: 205px minmax(0,1fr);
+    .lore-body {
+        grid-template-columns: 215px minmax(0,1fr);
     }
 
-    .record-grid {
-        grid-template-columns: minmax(0,1fr) 225px;
+    .record-layout {
+        grid-template-columns: minmax(0,1fr) 235px;
     }
 
-    .record-meta {
-        grid-template-columns: repeat(2,minmax(0,1fr));
+    .record-seal {
+        width: 62px;
+        height: 62px;
     }
 
-    .meta-cell:nth-child(2) {
+    .record-metadata {
+        grid-template-columns: repeat(3,1fr);
+    }
+
+    .meta-item:nth-child(3) {
         border-right: 0;
     }
 
-    .meta-cell:nth-child(-n+2) {
+    .meta-item:nth-child(-n+3) {
         border-bottom: 1px solid var(--line);
-    }
-
-    .discovery-strip {
-        grid-template-columns: 1fr;
-    }
-
-    .discovery-cell {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-    }
-
-    .discovery-cell:last-child {
-        border-bottom: 0;
     }
 }
 
@@ -1735,57 +2309,110 @@ button {
    MOBILE
    ============================================================ */
 
-@media (max-width: 760px) {
+@media (max-width: 780px) {
 
-    .archive-topline {
-        grid-template-columns: minmax(0,1fr) auto;
+    .lore-header {
+        min-height: 64px;
     }
 
-    .archive-edition {
+    .brand-area {
+        padding: 11px 13px;
+    }
+
+    .brand-mark {
+        width: 32px;
+        height: 32px;
+
+        margin-right: 10px;
+
+        font-size: 14px;
+    }
+
+    .brand-title {
+        font-size: 13px;
+
+        letter-spacing: .10em;
+    }
+
+    .brand-subtitle {
+        font-size: 6px;
+    }
+
+    .header-right {
         display: none;
     }
 
-    .archive-body {
+    .lore-nav {
+        display: none;
+    }
+
+    .lore-body {
         display: block;
     }
 
-    .archive-sidebar {
+    .codex-sidebar {
         display: none;
     }
 
-    .mobile-menu-button {
+    .mobile-index {
         display: block;
     }
 
-    .content-toolbar {
-        padding: 8px 12px;
+    .command-bar {
+        padding: 8px 11px;
     }
 
-    .toolbar-button {
+    .command-button {
         display: none;
     }
 
-    .record-stage {
-        padding: 12px;
+    .lore-stage {
+        padding: 10px;
     }
 
-    .record-header {
-        padding: 20px 16px 17px;
+    .codex-page::before {
+        left: 29px;
     }
 
-    .record-header::after {
+    .record-hero {
+        padding: 29px 19px 24px 43px;
+    }
+
+    .record-seal {
         position: static;
 
-        display: inline-block;
-
-        margin-top: 16px;
+        margin-top: 20px;
     }
 
     .record-title {
-        font-size: clamp(34px,11vw,54px);
+        font-size: clamp(38px,12vw,62px);
     }
 
-    .record-grid {
+    .record-subtitle {
+        font-size: 15px;
+    }
+
+    .record-metadata {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .meta-item {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .meta-item:nth-child(2) {
+        border-right: 0;
+    }
+
+    .meta-item:nth-child(3) {
+        border-right: 1px solid var(--line);
+    }
+
+    .meta-item:last-child {
+        border-right: 0;
+    }
+
+    .record-layout {
         display: block;
     }
 
@@ -1797,29 +2424,55 @@ button {
         border-top: 1px solid var(--line-strong);
     }
 
-    .archive-block {
-        padding: 18px 16px;
+    .lore-section {
+        padding: 22px 17px 22px 43px;
     }
 
-    .archive-text {
+    .section-number {
+        left: 14px;
+    }
+
+    .lore-paragraph {
         font-size: 15px;
     }
 
-    .reference-list {
+    .classification {
         grid-template-columns: 1fr;
     }
 
-    .archive-footer {
+    .classification-label {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .reference-grid {
         grid-template-columns: 1fr;
     }
 
-    .archive-footer-right {
+    .discovery-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .discovery-item {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .discovery-item:last-child {
+        border-bottom: 0;
+    }
+
+    .lore-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-right {
         text-align: left;
     }
 
     .mobile-drawer {
         position: fixed;
-        inset: 44px 0 0;
+        inset: 64px 0 0;
 
         z-index: 700;
 
@@ -1827,7 +2480,7 @@ button {
 
         padding: 15px;
 
-        background: #0b0b0a;
+        background: #0a0908;
 
         border-top: 1px solid var(--line-strong);
     }
@@ -1844,34 +2497,45 @@ button {
 
 @media (max-width: 480px) {
 
-    .archive-brand {
-        padding-left: 11px;
-
-        font-size: 9px;
+    .brand-mark {
+        display: none;
     }
 
-    .archive-status {
-        padding: 9px 10px;
-
-        font-size: 8px;
+    .brand-title {
+        font-size: 12px;
     }
 
-    .record-meta {
+    .record-hero {
+        padding-left: 37px;
+    }
+
+    .codex-page::before {
+        left: 25px;
+    }
+
+    .record-metadata {
         grid-template-columns: 1fr;
     }
 
-    .meta-cell {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
+    .meta-item {
+        border-right: 0 !important;
     }
 
-    .meta-cell:last-child {
+    .meta-item:last-child {
         border-bottom: 0;
     }
 
-    .classification-box {
-        width: 100%;
-        min-width: 0;
+    .lore-section {
+        padding-left: 37px;
+    }
+
+    .section-number {
+        left: 10px;
+    }
+
+    .search-result {
+        grid-template-columns: 1fr;
+        gap: 5px;
     }
 }
 """
@@ -1884,25 +2548,27 @@ button {
 JS_TEMPLATE = r"""
 const ARCHIVE_DATA = __SEARCH_DATA__;
 
-const originalWorlds = __WORLDS__;
-const characters = __CHARACTERS__;
-const events = __EVENTS__;
-const factions = __FACTIONS__;
-const artifacts = __ARTIFACTS__;
-const documents = __DOCUMENTS__;
-const questions = __QUESTIONS__;
+const WORLDS = __WORLDS__;
+const CHARACTERS = __CHARACTERS__;
+const EVENTS = __EVENTS__;
+const FACTIONS = __FACTIONS__;
+const ARTIFACTS = __ARTIFACTS__;
+const DOCUMENTS = __DOCUMENTS__;
+const QUESTIONS = __QUESTIONS__;
+const REFERENCES = __REFERENCES__;
 
-const archiveTypes = __ARCHIVE_TYPES__;
-const referenceUniverses = __REFERENCE_UNIVERSES__;
-
-const sessionSeen = new Set();
+const seenRecords = new Set();
 
 let currentRecord = null;
 
-const $ = (selector) => document.querySelector(selector);
+
+function $(selector) {
+    return document.querySelector(selector);
+}
 
 
 function escapeHTML(value) {
+
     return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -1913,585 +2579,877 @@ function escapeHTML(value) {
 
 
 function choose(array) {
-    return array[Math.floor(Math.random() * array.length)];
+
+    return array[
+        Math.floor(
+            Math.random() * array.length
+        )
+    ];
 }
 
 
 function shuffle(array) {
-    return [...array].sort(() => Math.random() - 0.5);
-}
 
-
-function randomFromDifferent(collection, count) {
-    return shuffle(collection).slice(
-        0,
-        Math.min(count, collection.length)
+    return [...array].sort(
+        () => Math.random() - 0.5
     );
 }
 
 
-function makeRecordId() {
-    return "REC-" + String(
-        Math.floor(10000 + Math.random() * 90000)
+function recordCode(prefix) {
+
+    return (
+        prefix.toUpperCase() +
+        "-" +
+        Math.floor(
+            100 + Math.random() * 900
+        )
     );
 }
 
 
-function statusFor(record) {
+function randomArchiveLocation() {
 
-    const statuses = [
+    const vaults = [
+        "THE LOWER VAULT",
+        "NORTH ARCHIVE",
+        "SEALED ANNEX",
+        "BLACK LIBRARY",
+        "WESTERN CATALOGUE",
+        "SUBTERRANEAN INDEX",
+        "UNNUMBERED COLLECTION",
+    ];
+
+    return choose(vaults);
+}
+
+
+function randomConfidence() {
+
+    return Math.floor(
+        41 + Math.random() * 54
+    ) + "%";
+}
+
+
+function getStatus(record) {
+
+    const options = [
         "RESTRICTED",
         "FRAGMENTARY",
-        "UNVERIFIED",
+        "UNRESOLVED",
         "DISPUTED",
-        "ARCHIVED",
-        "UNRESOLVED"
+        "UNVERIFIED",
+        "ARCHIVED"
     ];
 
     if (
         record.status &&
-        record.status !== "Archived"
+        record.status !== "Recorded"
     ) {
-        return String(record.status).toUpperCase();
+        return String(
+            record.status
+        ).toUpperCase();
     }
 
-    return choose(statuses);
+    return choose(options);
 }
 
 
-function makeNarrative(record) {
+function buildNarrative(record) {
 
-    const openings = [
-        "The surviving record is incomplete, but several independent references allow the archive to establish a provisional reconstruction.",
-        "No single source provides a complete account. The present entry is assembled from surviving references, later citations and disputed archival fragments.",
-        "The chronology remains uncertain. What follows is the archive's current reconstruction rather than an assertion of uncontested historical fact.",
-        "The record enters the collection because its references repeatedly appear in otherwise unrelated documents.",
-        "The available evidence is insufficient for a final conclusion, although the surviving material is unusually consistent in several important details."
+    const first = [
+        `The surviving material concerning ${record.name} is incomplete.`,
+        `${record.name} appears in more than one surviving collection.`,
+        `The earliest surviving reference to ${record.name} is itself fragmentary.`,
+        `The archive contains conflicting descriptions of ${record.name}.`,
+        `The historical identity of ${record.name} cannot be established from a single source.`
     ];
 
-    const middle = [
-        `The primary record identifies ${record.name} in connection with ${record.world || "an unidentified historical setting"}.`,
-        `Later documents preserve references to ${record.name}, although their descriptions differ in terminology and date.`,
-        `Archivists have repeatedly cross-referenced this record with material originating outside its immediate collection.`,
-        `Several secondary records appear to describe the same subject without using the same name.`,
-        `The surviving catalogue places this entry among records whose provenance remains incomplete.`
+    const second = [
+        "Later copies preserve details that are absent from the oldest known record.",
+        "Several unrelated documents appear to describe the same subject without using identical terminology.",
+        "The chronology attached to the entry has been reconstructed from secondary references.",
+        "Some details may represent later interpretation rather than contemporary testimony.",
+        "The contradictions have been preserved rather than harmonized."
     ];
 
-    const endings = [
-        "The absence of evidence has therefore been retained as part of the record rather than silently removed.",
-        "Until a stronger source is recovered, the contradictory material remains attached to the entry.",
-        "Researchers should therefore distinguish between documented details and later interpretation.",
-        "The archive currently preserves multiple possibilities instead of selecting a single definitive explanation.",
-        "No final classification has been assigned beyond the current archival status."
+    const third = [
+        "No surviving authority provides a final explanation.",
+        "The unanswered portion of the record remains part of the archive.",
+        "Further evidence would be required before the entry could be considered settled.",
+        "The archive therefore records uncertainty as a historical fact.",
+        "Until additional material is recovered, competing interpretations remain attached to the file."
     ];
 
     return [
-        choose(openings),
-        choose(middle),
-        choose(endings)
+        choose(first),
+        choose(second),
+        choose(third)
     ];
 }
 
 
-function makeReferences(record) {
+function getRelated(record) {
 
-    const related = ARCHIVE_DATA
-        .filter(item => item.id !== record.id)
-        .filter(item =>
-            item.world === record.world ||
-            item.type === record.type
+    const sameWorld =
+        ARCHIVE_DATA.filter(
+            item =>
+                item.id !== record.id &&
+                item.world === record.world
         );
 
-    const pool = related.length
-        ? related
-        : ARCHIVE_DATA.filter(
-            item => item.id !== record.id
+    const fallback =
+        ARCHIVE_DATA.filter(
+            item =>
+                item.id !== record.id
         );
 
-    return randomFromDifferent(pool, 4);
+    const pool =
+        sameWorld.length >= 4
+            ? sameWorld
+            : fallback;
+
+    return shuffle(pool).slice(0,4);
 }
 
 
-function selectRecord() {
+function getWorldSymbol(name) {
 
-    const available = ARCHIVE_DATA.filter(
-        item => !sessionSeen.has(item.id)
-    );
+    const symbols = [
+        "✦",
+        "◇",
+        "☽",
+        "✧",
+        "◈",
+        "⌘",
+        "☿",
+        "△"
+    ];
 
-    let record;
+    let hash = 0;
 
-    if (available.length) {
-        record = choose(available);
-    } else {
-        sessionSeen.clear();
-        record = choose(ARCHIVE_DATA);
+    for (
+        let i = 0;
+        i < String(name).length;
+        i++
+    ) {
+        hash += String(name).charCodeAt(i);
     }
 
-    sessionSeen.add(record.id);
-
-    return record;
+    return symbols[
+        hash % symbols.length
+    ];
 }
 
 
-function buildReferencesHTML(references) {
+function buildReferences(items) {
 
-    return references.map(item => `
+    return items.map(item => `
+
         <div
-            class="reference-item"
-            data-record-id="${escapeHTML(item.id)}"
+            class="reference"
+            data-record="${escapeHTML(item.id)}"
         >
+
             <span class="reference-id">
                 ${escapeHTML(item.id)}
             </span>
 
-            <span class="reference-name">
+            <span class="reference-title">
                 ${escapeHTML(item.name)}
             </span>
+
         </div>
+
     `).join("");
 }
 
 
-function buildRecord(record) {
+function renderRecord(record) {
 
     currentRecord = record;
 
-    const references = makeReferences(record);
+    const status = getStatus(record);
 
-    const status = statusFor(record);
+    const related =
+        getRelated(record);
 
-    const archiveNumber = makeRecordId();
+    const narrative =
+        buildNarrative(record);
 
-    const narrative = makeNarrative(record);
+    const archiveCode =
+        recordCode("FLW");
 
-    const classifications = [
-        "RESTRICTED",
-        "FRAGMENTARY",
-        "ARCHIVED",
-        "DISPUTED",
-        "UNVERIFIED",
-        "UNRESOLVED"
-    ];
+    const confidence =
+        randomConfidence();
+
+    const location =
+        randomArchiveLocation();
+
+    const symbol =
+        getWorldSymbol(
+            record.world || record.name
+        );
 
     const classification =
         status === "ARCHIVED"
-            ? choose(classifications)
+            ? "CLASSIFIED LORE"
             : status;
 
-    const recordType =
-        record.type ||
-        choose([
-            "Historical Record",
-            "Recovered Document",
-            "Restricted Report",
-            "Cross-Reference",
-            "Unresolved Case"
-        ]);
+    const era =
+        record.era ||
+        "ERA UNKNOWN";
 
-    const referenceWorld =
-        record.world ||
-        choose(originalWorlds).name;
+    const origin =
+        record.origin ||
+        "ARCHIVAL RECORD";
 
-    const articleTitle = escapeHTML(record.name);
-    const articleType = escapeHTML(recordType);
-    const world = escapeHTML(referenceWorld);
+    const html = `
 
-    const recordHtml = `
+        <article class="codex-page">
 
-        <div class="record-header">
 
-            <div class="record-kicker">
-                Restricted Historical Collection
-                ·
-                ${escapeHTML(archiveNumber)}
-            </div>
+            <header class="record-hero">
 
-            <h1 class="record-title">
-                ${articleTitle}
-            </h1>
+                <div class="record-seal">
 
-            <p class="record-subtitle">
-                ${articleType}
-                ·
-                ${world}
-                ·
-                Archive Status
-                ${escapeHTML(status)}
-            </p>
+                    FORBIDDEN<br>
+                    LORE<br>
+                    ${escapeHTML(
+                        archiveCode
+                    )}
 
-            <div class="record-meta">
+                </div>
 
-                <div class="meta-cell">
+
+                <div class="record-kicker">
+
+                    FORBIDDEN ARCHIVE
+                    ·
+                    ${escapeHTML(
+                        record.type
+                    )}
+                    ·
+                    RECORD ${escapeHTML(
+                        record.id
+                    )}
+
+                </div>
+
+
+                <h1 class="record-title">
+
+                    ${escapeHTML(
+                        record.name
+                    )}
+
+                </h1>
+
+
+                <p class="record-subtitle">
+
+                    ${escapeHTML(
+                        record.description
+                    )}
+
+                </p>
+
+
+                <div class="record-origin">
+
+                    <span class="origin-tag">
+                        ${escapeHTML(origin)}
+                    </span>
+
+                    <span class="origin-tag">
+                        ${escapeHTML(
+                            record.world ||
+                            "UNKNOWN WORLD"
+                        )}
+                    </span>
+
+                    <span class="origin-tag">
+                        ${escapeHTML(
+                            era
+                        )}
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            <div class="record-metadata">
+
+
+                <div class="meta-item">
+
                     <span class="meta-label">
-                        Record
+                        Archive ID
                     </span>
 
                     <span class="meta-value">
-                        ${escapeHTML(record.id)}
+                        ${escapeHTML(
+                            record.id
+                        )}
                     </span>
+
                 </div>
 
-                <div class="meta-cell">
+
+                <div class="meta-item">
+
                     <span class="meta-label">
                         Classification
                     </span>
 
                     <span class="meta-value">
-                        ${escapeHTML(classification)}
+                        ${escapeHTML(
+                            classification
+                        )}
                     </span>
+
                 </div>
 
-                <div class="meta-cell">
+
+                <div class="meta-item">
+
                     <span class="meta-label">
-                        Source State
+                        Era
                     </span>
 
                     <span class="meta-value">
                         ${escapeHTML(
-                            record.status || "Fragmentary"
+                            era
                         )}
                     </span>
+
                 </div>
 
-                <div class="meta-cell">
+
+                <div class="meta-item">
+
                     <span class="meta-label">
-                        Collection
+                        Provenance
                     </span>
 
                     <span class="meta-value">
-                        Forbidden Lore · 01
+                        ${escapeHTML(origin)}
                     </span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="record-grid">
-
-            <main class="record-main">
-
-                <section class="archive-block">
-
-                    <div class="block-heading">
-
-                        <h2 class="block-title">
-                            Archival Summary
-                        </h2>
-
-                        <span class="block-code">
-                            ${escapeHTML(record.id)}
-                        </span>
-
-                    </div>
-
-                    <p class="archive-text">
-                        ${escapeHTML(record.description)}
-                    </p>
-
-                    ${narrative.map(text => `
-                        <p class="archive-text">
-                            ${escapeHTML(text)}
-                        </p>
-                    `).join("")}
-
-                </section>
-
-
-                <section class="archive-block">
-
-                    <div class="block-heading">
-
-                        <h2 class="block-title">
-                            Classification
-                        </h2>
-
-                        <span class="block-code">
-                            SEC. 04
-                        </span>
-
-                    </div>
-
-                    <div class="classification-box">
-
-                        <div class="classification-heading">
-                            Archive Classification
-                        </div>
-
-                        <div class="classification-value">
-                            ${escapeHTML(classification)}
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <section class="archive-block">
-
-                    <div class="block-heading">
-
-                        <h2 class="block-title">
-                            References
-                        </h2>
-
-                        <span class="block-code">
-                            CROSS-INDEX
-                        </span>
-
-                    </div>
-
-                    <div class="reference-list">
-                        ${buildReferencesHTML(references)}
-                    </div>
-
-                </section>
-
-
-                <section class="archive-block">
-
-                    <div class="block-heading">
-
-                        <h2 class="block-title">
-                            Archivist Note
-                        </h2>
-
-                        <span class="block-code">
-                            NOTE ${Math.floor(
-                                Math.random() * 900 + 100
-                            )}
-                        </span>
-
-                    </div>
-
-                    <div class="margin-note">
-                        The record has been retained because
-                        the contradictions surrounding it are
-                        themselves historically significant.
-                        <span class="redacted-line">
-                            classification withheld
-                        </span>
-                        remains attached to the original file.
-                    </div>
-
-                </section>
-
-            </main>
-
-
-            <aside class="record-aside">
-
-                <div class="aside-block">
-
-                    <div class="aside-label">
-                        Record Status
-                    </div>
-
-                    <div class="stamp">
-                        ${escapeHTML(status)}
-                    </div>
 
                 </div>
 
 
-                <div class="aside-block">
+                <div class="meta-item">
 
-                    <div class="aside-label">
-                        Archive Location
-                    </div>
-
-                    <div class="aside-value">
-
-                        Collection 01
-                        <br>
-
-                        Shelf
-                        ${Math.floor(
-                            Math.random() * 90 + 10
-                        )}
-
-                        <br>
-
-                        Box
-                        ${Math.floor(
-                            Math.random() * 900 + 100
-                        )}
-
-                        <br>
-
-                        File
-                        ${Math.floor(
-                            Math.random() * 9000 + 1000
-                        )}
-
-                    </div>
-
-                </div>
-
-
-                <div class="aside-block">
-
-                    <div class="aside-label">
-                        World Reference
-                    </div>
-
-                    <div class="aside-value">
-                        ${world}
-                    </div>
-
-                </div>
-
-
-                <div class="aside-block">
-
-                    <div class="aside-label">
+                    <span class="meta-label">
                         Confidence
-                    </div>
+                    </span>
 
-                    <div class="aside-value">
+                    <span class="meta-value">
+                        ${confidence}
+                    </span>
 
-                        ${Math.floor(
-                            Math.random() * 35 + 50
-                        )}%
+                </div>
 
-                        <br>
 
-                        <span
-                            style="color:var(--paper-faint)"
-                        >
-                            provisional reconstruction
+            </div>
+
+
+            <div class="record-layout">
+
+
+                <main class="record-main">
+
+
+                    <section class="lore-section">
+
+                        <span class="section-number">
+                            I
                         </span>
 
+
+                        <div class="section-heading">
+
+                            <h2 class="section-title">
+                                The Record
+                            </h2>
+
+                            <span class="section-code">
+                                PRIMARY ACCOUNT
+                            </span>
+
+                        </div>
+
+
+                        <p class="lore-paragraph">
+
+                            ${escapeHTML(
+                                record.description
+                            )}
+
+                        </p>
+
+                    </section>
+
+
+                    <section class="lore-section">
+
+                        <span class="section-number">
+                            II
+                        </span>
+
+
+                        <div class="section-heading">
+
+                            <h2 class="section-title">
+                                Recovered Lore
+                            </h2>
+
+                            <span class="section-code">
+                                SECONDARY MATERIAL
+                            </span>
+
+                        </div>
+
+
+                        ${narrative.map(
+                            paragraph => `
+
+                                <p class="lore-paragraph">
+                                    ${escapeHTML(
+                                        paragraph
+                                    )}
+                                </p>
+
+                            `
+                        ).join("")}
+
+                    </section>
+
+
+                    <section class="lore-section">
+
+                        <span class="section-number">
+                            III
+                        </span>
+
+
+                        <div class="section-heading">
+
+                            <h2 class="section-title">
+                                Classification
+                            </h2>
+
+                            <span class="section-code">
+                                ARCHIVE DECISION
+                            </span>
+
+                        </div>
+
+
+                        <div class="classification">
+
+                            <div class="classification-label">
+                                Current Status
+                            </div>
+
+                            <div class="classification-value">
+                                ${escapeHTML(
+                                    status
+                                )}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="lore-section">
+
+                        <span class="section-number">
+                            IV
+                        </span>
+
+
+                        <div class="section-heading">
+
+                            <h2 class="section-title">
+                                Archivist Fragment
+                            </h2>
+
+                            <span class="section-code">
+                                MARGIN NOTE
+                            </span>
+
+                        </div>
+
+
+                        <blockquote class="lore-quote">
+
+                            The archive does not preserve
+                            certainty. It preserves what survived.
+
+                            What was erased may be more important
+                            than what remains.
+
+                        </blockquote>
+
+                    </section>
+
+
+                    <section class="lore-section">
+
+                        <span class="section-number">
+                            V
+                        </span>
+
+
+                        <div class="section-heading">
+
+                            <h2 class="section-title">
+                                Cross-References
+                            </h2>
+
+                            <span class="section-code">
+                                ${related.length}
+                                LINKED RECORDS
+                            </span>
+
+                        </div>
+
+
+                        <div class="reference-grid">
+
+                            ${buildReferences(
+                                related
+                            )}
+
+                        </div>
+
+                    </section>
+
+
+                </main>
+
+
+                <aside class="record-aside">
+
+
+                    <section class="aside-section">
+
+                        <div class="aside-heading">
+                            Archive Condition
+                        </div>
+
+                        <div class="status-seal">
+                            ${escapeHTML(
+                                status
+                            )}
+                        </div>
+
+                    </section>
+
+
+                    <section class="aside-section">
+
+                        <div class="world-symbol">
+                            <span>
+                                ${symbol}
+                            </span>
+                        </div>
+
+
+                        <div class="aside-heading">
+                            World / Realm
+                        </div>
+
+                        <div class="aside-value">
+
+                            ${escapeHTML(
+                                record.world ||
+                                "Unknown Realm"
+                            )}
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="aside-section">
+
+                        <div class="aside-heading">
+                            Archive Location
+                        </div>
+
+                        <div class="aside-mono">
+
+                            ${escapeHTML(
+                                location
+                            )}
+
+                            <br>
+
+                            SHELF:
+                            ${Math.floor(
+                                10 +
+                                Math.random() * 90
+                            )}
+
+                            <br>
+
+                            VAULT:
+                            ${Math.floor(
+                                100 +
+                                Math.random() * 900
+                            )}
+
+                            <br>
+
+                            FILE:
+                            ${Math.floor(
+                                1000 +
+                                Math.random() * 9000
+                            )}
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="aside-section">
+
+                        <div class="aside-heading">
+                            Record Properties
+                        </div>
+
+
+                        <ul class="aside-list">
+
+                            <li>
+                                ORIGIN:
+                                ${escapeHTML(origin)}
+                            </li>
+
+                            <li>
+                                ERA:
+                                ${escapeHTML(era)}
+                            </li>
+
+                            <li>
+                                STATUS:
+                                ${escapeHTML(status)}
+                            </li>
+
+                            <li>
+                                CONFIDENCE:
+                                ${confidence}
+                            </li>
+
+                            <li>
+                                CROSS REFERENCES:
+                                ${related.length}
+                            </li>
+
+                        </ul>
+
+                    </section>
+
+
+                    <section class="aside-section">
+
+                        <div class="aside-heading">
+                            Warning
+                        </div>
+
+                        <div class="aside-value">
+
+                            Some records contained in
+                            this collection are deliberately
+                            incomplete.
+
+                            <br><br>
+
+                            Absence of evidence does not
+                            constitute evidence of absence.
+
+                        </div>
+
+                    </section>
+
+
+                </aside>
+
+            </div>
+
+
+            <div class="discovery-bar">
+
+
+                <div class="discovery-item">
+
+                    <div class="discovery-label">
+                        Current Record
                     </div>
 
-                </div>
-
-
-                <div class="aside-block">
-
-                    <div class="aside-label">
-                        Cross-Reference Count
-                    </div>
-
-                    <div class="aside-value">
-
-                        ${Math.floor(
-                            Math.random() * 40 + 7
+                    <div class="discovery-value">
+                        ${escapeHTML(
+                            record.name
                         )}
-                        surviving references
+                    </div>
 
+                    <div class="discovery-small">
+                        ${escapeHTML(
+                            record.id
+                        )}
                     </div>
 
                 </div>
 
-            </aside>
 
-        </div>
+                <div class="discovery-item">
 
+                    <div class="discovery-label">
+                        Follow the Lore
+                    </div>
 
-        <div class="discovery-strip">
+                    <div class="discovery-value">
+                        Examine Cross-References
+                    </div>
 
-            <div class="discovery-cell">
+                    <div class="discovery-small">
+                        Each reference leads somewhere else.
+                    </div>
 
-                <div class="discovery-label">
-                    Current Discovery
                 </div>
 
-                <div class="discovery-value">
-                    ${escapeHTML(record.name)}
+
+                <div class="discovery-item">
+
+                    <div class="discovery-label">
+                        Forbidden Discovery
+                    </div>
+
+                    <div class="discovery-value">
+                        Open Another Record
+                    </div>
+
+                    <div class="discovery-small">
+                        Press D or use RANDOM LORE.
+                    </div>
+
                 </div>
 
-                <div class="discovery-small">
-                    ${escapeHTML(record.type)}
-                </div>
 
             </div>
 
 
-            <div class="discovery-cell">
-
-                <div class="discovery-label">
-                    Related World
-                </div>
-
-                <div class="discovery-value">
-                    ${world}
-                </div>
-
-                <div class="discovery-small">
-                    Cross-referenced archive
-                </div>
-
-            </div>
-
-
-            <div class="discovery-cell">
-
-                <div class="discovery-label">
-                    Next Action
-                </div>
-
-                <div class="discovery-value">
-                    Trace references
-                </div>
-
-                <div class="discovery-small">
-                    Press D for another record
-                </div>
-
-            </div>
-
-        </div>
+        </article>
     `;
 
-    $("#record-stage").innerHTML = recordHtml;
+
+    $("#lore-stage").innerHTML = html;
+
 
     document.title =
-        `${record.name} · Forbidden Lore Wiki`;
+        record.name +
+        " · Forbidden Lore Wiki";
+
 
     document
-        .querySelectorAll("[data-record-id]")
-        .forEach(node => {
+        .querySelectorAll(
+            "[data-record]"
+        )
+        .forEach(element => {
 
-            node.addEventListener("click", () => {
+            element.addEventListener(
+                "click",
+                () => {
 
-                const id = node.dataset.recordId;
+                    const id =
+                        element.dataset.record;
 
-                const found =
-                    ARCHIVE_DATA.find(
-                        item => item.id === id
-                    );
+                    const target =
+                        ARCHIVE_DATA.find(
+                            item =>
+                                item.id === id
+                        );
 
-                if (found) {
+                    if (target) {
 
-                    sessionSeen.add(found.id);
+                        seenRecords.add(
+                            target.id
+                        );
 
-                    buildRecord(found);
+                        renderRecord(
+                            target
+                        );
 
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                        });
+
+                    }
+
                 }
-            });
+            );
+
         });
+}
+
+
+function nextLore() {
+
+    let available =
+        ARCHIVE_DATA.filter(
+            record =>
+                !seenRecords.has(
+                    record.id
+                )
+        );
+
+
+    if (!available.length) {
+
+        seenRecords.clear();
+
+        available =
+            [...ARCHIVE_DATA];
+
+    }
+
+
+    const record =
+        choose(available);
+
+
+    seenRecords.add(
+        record.id
+    );
+
+
+    renderRecord(record);
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 
 function openSearch() {
 
-    const overlay = $("#search-overlay");
+    $("#search-overlay")
+        .classList.add("open");
 
-    overlay.classList.add("open");
+    $("#search-input").value = "";
 
-    const input = $("#search-input");
+    $("#search-input").focus();
 
-    input.value = "";
-
-    input.focus();
-
-    renderSearchResults("");
+    renderSearch("");
 }
 
 
@@ -2502,69 +3460,79 @@ function closeSearch() {
 }
 
 
-function renderSearchResults(query) {
-
-    const target = $("#search-results");
+function renderSearch(query) {
 
     const normalized =
-        query.trim().toLowerCase();
+        query
+            .trim()
+            .toLowerCase();
+
 
     const results =
         ARCHIVE_DATA
-            .filter(item => {
+            .filter(record => {
 
                 if (!normalized) {
                     return true;
                 }
 
                 const searchable = [
-                    item.id,
-                    item.type,
-                    item.name,
-                    item.world,
-                    item.status,
-                    item.description
+                    record.id,
+                    record.type,
+                    record.name,
+                    record.world,
+                    record.status,
+                    record.era,
+                    record.description
                 ]
                     .join(" ")
                     .toLowerCase();
 
-                return searchable.includes(normalized);
+                return searchable.includes(
+                    normalized
+                );
 
             })
-            .slice(0,40);
+            .slice(0,50);
 
 
     if (!results.length) {
 
-        target.innerHTML = `
+        $("#search-results").innerHTML = `
+
             <div
                 style="
-                    padding:24px;
-                    color:var(--paper-faint);
+                    padding:25px;
+                    color:var(--bone-dim);
                     font-family:var(--mono);
-                    font-size:10px;
+                    font-size:9px;
                 "
             >
-                NO MATCHING RECORDS FOUND.
+                NO LORE FOUND IN THE CURRENT CATALOGUE.
             </div>
+
         `;
 
         return;
     }
 
 
-    target.innerHTML =
-        results.map(item => `
+    $("#search-results").innerHTML =
+        results.map(record => `
 
             <div
                 class="search-result"
-                data-search-id="${escapeHTML(item.id)}"
+                data-search-record="${escapeHTML(
+                    record.id
+                )}"
             >
 
                 <div>
 
                     <div class="search-result-id">
-                        ${escapeHTML(item.id)}
+                        ${escapeHTML(
+                            record.id
+                        )}
                     </div>
 
                 </div>
@@ -2572,22 +3540,39 @@ function renderSearchResults(query) {
 
                 <div>
 
-                    <div class="search-result-title">
-                        ${escapeHTML(item.name)}
+                    <div class="search-result-name">
+                        ${escapeHTML(
+                            record.name
+                        )}
                     </div>
 
                     <div class="search-result-meta">
 
-                        ${escapeHTML(item.type)}
-                        ·
                         ${escapeHTML(
-                            item.world || "UNKNOWN"
+                            record.type
+                        )}
+
+                        ·
+
+                        ${escapeHTML(
+                            record.world ||
+                            "UNKNOWN"
+                        )}
+
+                        ·
+
+                        ${escapeHTML(
+                            record.status
                         )}
 
                     </div>
 
                     <div class="search-result-description">
-                        ${escapeHTML(item.description)}
+
+                        ${escapeHTML(
+                            record.description
+                        )}
+
                     </div>
 
                 </div>
@@ -2598,171 +3583,203 @@ function renderSearchResults(query) {
 
 
     document
-        .querySelectorAll("[data-search-id]")
-        .forEach(node => {
+        .querySelectorAll(
+            "[data-search-record]"
+        )
+        .forEach(element => {
 
-            node.addEventListener("click", () => {
+            element.addEventListener(
+                "click",
+                () => {
 
-                const id =
-                    node.dataset.searchId;
+                    const target =
+                        ARCHIVE_DATA.find(
+                            item =>
+                                item.id ===
+                                element.dataset
+                                    .searchRecord
+                        );
 
-                const found =
-                    ARCHIVE_DATA.find(
-                        item => item.id === id
-                    );
+                    if (target) {
 
-                if (found) {
+                        seenRecords.add(
+                            target.id
+                        );
 
-                    sessionSeen.add(found.id);
+                        closeSearch();
 
-                    closeSearch();
+                        renderRecord(
+                            target
+                        );
 
-                    buildRecord(found);
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                        });
 
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
+                    }
+
                 }
-
-            });
+            );
 
         });
 }
 
 
-function toggleMobileMenu() {
+function openTimeline() {
+
+    const event =
+        choose(EVENTS);
+
+
+    const record = {
+
+        id:
+            "TIM-" +
+            Math.floor(
+                100 +
+                Math.random() * 900
+            ),
+
+        type:
+            "Chronological Record",
+
+        name:
+            event.name,
+
+        world:
+            event.world,
+
+        era:
+            event.year,
+
+        status:
+            event.status,
+
+        origin:
+            "Historical Timeline",
+
+        description:
+            event.description
+
+    };
+
+
+    seenRecords.add(
+        record.id
+    );
+
+
+    renderRecord(record);
+
+    closeMobile();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function openReference(name) {
+
+    const reference =
+        REFERENCES.find(
+            item =>
+                item.name.toLowerCase() ===
+                String(name).toLowerCase()
+        ) ||
+        choose(REFERENCES);
+
+
+    const record = {
+
+        id:
+            "REF-" +
+            Math.floor(
+                100 +
+                Math.random() * 900
+            ),
+
+        type:
+            "Reference Universe",
+
+        name:
+            reference.name,
+
+        world:
+            "REFERENCE REALM",
+
+        era:
+            "CONTINUITY INDEX",
+
+        status:
+            "REFERENCE",
+
+        origin:
+            "Reference Universe",
+
+        description:
+            reference.description
+
+    };
+
+
+    renderRecord(record);
+
+    closeMobile();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function openType(type) {
+
+    const candidates =
+        ARCHIVE_DATA.filter(
+            item =>
+                item.type === type
+        );
+
+
+    if (candidates.length) {
+
+        renderRecord(
+            choose(candidates)
+        );
+
+    } else {
+
+        renderRecord(
+            choose(ARCHIVE_DATA)
+        );
+
+    }
+
+
+    closeMobile();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function toggleMobile() {
 
     $("#mobile-drawer")
         .classList.toggle("open");
 }
 
 
-function closeMobileMenu() {
+function closeMobile() {
 
     $("#mobile-drawer")
         .classList.remove("open");
-}
-
-
-function randomDiscovery() {
-
-    buildRecord(selectRecord());
-
-    closeMobileMenu();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-function navigateToType(type) {
-
-    const found =
-        ARCHIVE_DATA.filter(
-            item => item.type === type
-        );
-
-    if (found.length) {
-        buildRecord(choose(found));
-    } else {
-        buildRecord(choose(ARCHIVE_DATA));
-    }
-
-    closeMobileMenu();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-function openTimeline() {
-
-    const record = choose(events);
-
-    const timelineRecord = {
-
-        id:
-            "TIM-" +
-            String(
-                Math.floor(
-                    100 + Math.random() * 900
-                )
-            ),
-
-        type: "Historical Timeline",
-
-        name: record.name,
-
-        world: record.world,
-
-        status: "TIMELINE ENTRY",
-
-        description: record.description
-    };
-
-    buildRecord(timelineRecord);
-
-    closeMobileMenu();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-function showReferenceUniverse(name) {
-
-    let reference;
-
-    if (name) {
-
-        reference =
-            referenceUniverses.find(
-                item =>
-                    item.name.toLowerCase() ===
-                    name.toLowerCase()
-            );
-    }
-
-    if (!reference) {
-        reference = choose(referenceUniverses);
-    }
-
-    const record = {
-
-        id:
-            "REF-" +
-            String(
-                Math.floor(
-                    100 + Math.random() * 900
-                )
-            ),
-
-        type: "Reference Universe",
-
-        name: reference.name,
-
-        world: "Reference Collection",
-
-        status: "REFERENCE",
-
-        description: reference.description
-    };
-
-    buildRecord(record);
-
-    closeMobileMenu();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 }
 
 
@@ -2770,17 +3787,20 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        buildRecord(selectRecord());
+
+        renderRecord(
+            choose(ARCHIVE_DATA)
+        );
 
 
-        $("#random-button")
+        $("#random-lore")
             .addEventListener(
                 "click",
-                randomDiscovery
+                nextLore
             );
 
 
-        $("#search-button")
+        $("#search-open")
             .addEventListener(
                 "click",
                 openSearch
@@ -2794,21 +3814,20 @@ document.addEventListener(
             );
 
 
-        $("#mobile-menu-button")
+        $("#mobile-index")
             .addEventListener(
                 "click",
-                toggleMobileMenu
+                toggleMobile
             );
 
 
         $("#search-input")
             .addEventListener(
                 "input",
-                event => {
-                    renderSearchResults(
+                event =>
+                    renderSearch(
                         event.target.value
-                    );
-                }
+                    )
             );
 
 
@@ -2821,7 +3840,9 @@ document.addEventListener(
                         event.target ===
                         $("#search-overlay")
                     ) {
+
                         closeSearch();
+
                     }
 
                 }
@@ -2830,13 +3851,13 @@ document.addEventListener(
 
         document
             .querySelectorAll(
-                "[data-action='discover']"
+                "[data-action='random']"
             )
             .forEach(button => {
 
                 button.addEventListener(
                     "click",
-                    randomDiscovery
+                    nextLore
                 );
 
             });
@@ -2858,7 +3879,7 @@ document.addEventListener(
 
         document
             .querySelectorAll(
-                "[data-action='reference']"
+                "[data-reference]"
             )
             .forEach(button => {
 
@@ -2866,7 +3887,7 @@ document.addEventListener(
                     "click",
                     () => {
 
-                        showReferenceUniverse(
+                        openReference(
                             button.dataset.reference
                         );
 
@@ -2877,14 +3898,16 @@ document.addEventListener(
 
 
         document
-            .querySelectorAll("[data-type]")
+            .querySelectorAll(
+                "[data-type]"
+            )
             .forEach(button => {
 
                 button.addEventListener(
                     "click",
                     () => {
 
-                        navigateToType(
+                        openType(
                             button.dataset.type
                         );
 
@@ -2898,33 +3921,42 @@ document.addEventListener(
             "keydown",
             event => {
 
+                const searchActive =
+                    document.activeElement ===
+                    $("#search-input");
+
+
                 if (
                     event.key === "/" &&
-                    document.activeElement !==
-                        $("#search-input")
+                    !searchActive
                 ) {
 
                     event.preventDefault();
 
                     openSearch();
+
                 }
 
 
                 if (
-                    event.key.toLowerCase() === "d" &&
-                    document.activeElement !==
-                        $("#search-input")
+                    event.key.toLowerCase() ===
+                    "d" &&
+                    !searchActive
                 ) {
 
-                    randomDiscovery();
+                    nextLore();
+
                 }
 
 
-                if (event.key === "Escape") {
+                if (
+                    event.key === "Escape"
+                ) {
 
                     closeSearch();
 
-                    closeMobileMenu();
+                    closeMobile();
+
                 }
 
             }
@@ -2940,6 +3972,7 @@ document.addEventListener(
 # ============================================================
 
 HTML_TEMPLATE = r"""<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -2953,7 +3986,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
     <meta
         name="description"
-        content="The Forbidden Lore Wiki — an archival interface for fictional civilizations, histories, characters, artifacts, documents and forgotten worlds."
+        content="Forbidden Lore Wiki — an encyclopedic archive of fictional worlds, characters, civilizations, artifacts, histories, factions and forbidden records."
     >
 
     <meta
@@ -2963,12 +3996,12 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
     <meta
         property="og:title"
-        content="The Forbidden Lore Wiki"
+        content="Forbidden Lore Wiki"
     >
 
     <meta
         property="og:description"
-        content="A fictional archival interface for forbidden histories, characters, worlds, artifacts and documents."
+        content="A fictional lore encyclopedia and forbidden archive."
     >
 
     <meta
@@ -2977,496 +4010,717 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     >
 
     <title>
-        The Forbidden Lore Wiki
+        Forbidden Lore Wiki
     </title>
 
+
     <style>
+
         __CSS__
+
     </style>
 
 </head>
 
 
-<body class="__THEME__">
+<body>
 
 
-<div class="archive-shell">
+<div class="lore-frame">
 
 
-    <header class="archive-topline">
+    <!-- ======================================================
+         HEADER
+         ====================================================== -->
 
-        <div class="archive-brand">
-            FORBIDDEN LORE WIKI
+    <header class="lore-header">
+
+
+        <div class="brand-area">
+
+
+            <div class="brand-mark">
+
+                <span>
+                    F
+                </span>
+
+            </div>
+
+
+            <div class="brand-copy">
+
+                <h1 class="brand-title">
+                    Forbidden Lore Wiki
+                </h1>
+
+                <div class="brand-subtitle">
+
+                    Encyclopedia of Worlds,
+                    Histories & Unresolved Lore
+
+                </div>
+
+            </div>
+
+
         </div>
 
-        <div class="archive-edition">
-            ARCHIVE 01 · EDITION 07
+
+        <div class="header-right">
+
+
+            <div class="header-cell">
+
+                <div class="header-label">
+                    Catalogue
+                </div>
+
+                <div class="header-value">
+                    FLW / 001
+                </div>
+
+            </div>
+
+
+            <div class="header-cell">
+
+                <div class="header-label">
+                    Archive State
+                </div>
+
+                <div class="header-value header-status">
+                    Active
+                </div>
+
+            </div>
+
+
         </div>
 
-        <div class="archive-status">
-            STATUS: ACTIVE
-        </div>
 
     </header>
 
 
-    <div class="archive-body">
+    <!-- ======================================================
+         NAVIGATION
+         ====================================================== -->
+
+    <nav class="lore-nav">
 
 
-        <aside class="archive-sidebar">
+        <button
+            class="nav-item active"
+            data-action="random"
+        >
+            Discover
+        </button>
 
-            <div class="sidebar-inner">
+
+        <button
+            class="nav-item"
+            data-type="World"
+        >
+            Worlds
+        </button>
 
 
-                <div class="sidebar-section">
+        <button
+            class="nav-item"
+            data-type="Character"
+        >
+            Characters
+        </button>
 
-                    <div class="sidebar-label">
-                        INDEX
-                    </div>
 
-                    <nav class="sidebar-nav">
+        <button
+            class="nav-item"
+            data-type="Historical Event"
+        >
+            History
+        </button>
 
-                        <button
-                            class="sidebar-link active"
-                            data-action="discover"
-                        >
-                            DISCOVER
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="discover"
-                        >
-                            ARCHIVE
-                        </button>
+        <button
+            class="nav-item"
+            data-type="Faction"
+        >
+            Factions
+        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="timeline"
-                        >
-                            TIMELINE
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="World"
-                        >
-                            WORLDS
-                        </button>
+        <button
+            class="nav-item"
+            data-type="Artifact"
+        >
+            Artifacts
+        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Faction"
-                        >
-                            FACTIONS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Character"
-                        >
-                            CHARACTERS
-                        </button>
+        <button
+            class="nav-item"
+            data-type="Document"
+        >
+            Documents
+        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Artifact"
-                        >
-                            ARTIFACTS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Document"
-                        >
-                            DOCUMENTS
-                        </button>
+        <button
+            class="nav-item"
+            data-type="Unresolved Mystery"
+        >
+            Mysteries
+        </button>
 
-                    </nav>
+
+        <button
+            class="nav-item"
+            data-action="timeline"
+        >
+            Timeline
+        </button>
+
+
+    </nav>
+
+
+    <!-- ======================================================
+         BODY
+         ====================================================== -->
+
+    <div class="lore-body">
+
+
+        <!-- ==================================================
+             SIDEBAR
+             ================================================== -->
+
+        <aside class="codex-sidebar">
+
+
+            <div class="codex-sidebar-inner">
+
+
+                <div class="sidebar-heading">
+                    Codex Index
+                </div>
+
+                <div class="sidebar-rule"></div>
+
+
+                <div class="codex-list">
+
+
+                    <button
+                        class="codex-button active"
+                        data-action="random"
+                    >
+                        Random Lore
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="World"
+                    >
+                        Original Worlds
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Character"
+                    >
+                        Characters
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Historical Event"
+                    >
+                        Historical Events
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Faction"
+                    >
+                        Factions & Orders
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Artifact"
+                    >
+                        Artifacts & Relics
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Document"
+                    >
+                        Lost Documents
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Unresolved Mystery"
+                    >
+                        Unresolved Mysteries
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-action="timeline"
+                    >
+                        Chronologies
+                    </button>
+
 
                 </div>
 
 
-                <div class="sidebar-section">
+                <div class="sidebar-heading">
+                    Fictional Realms
+                </div>
 
-                    <div class="sidebar-label">
-                        REFERENCE UNIVERSES
-                    </div>
+                <div class="sidebar-rule"></div>
 
-                    <nav class="sidebar-nav">
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Anime"
-                        >
-                            ANIME
-                        </button>
+                <div class="codex-list">
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Manhwa"
-                        >
-                            MANHWA
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Manhua"
-                        >
-                            MANHUA
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Anime"
+                    >
+                        Anime
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Donghua"
-                        >
-                            DONGHUA
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Light Novels"
-                        >
-                            LIGHT NOVELS
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Manhwa"
+                    >
+                        Manhwa
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Comics"
-                        >
-                            COMICS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="DC"
-                        >
-                            DC
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Manhua"
+                    >
+                        Manhua
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Marvel"
-                        >
-                            MARVEL
-                        </button>
 
-                    </nav>
+                    <button
+                        class="codex-button"
+                        data-reference="Donghua"
+                    >
+                        Donghua
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Light Novels"
+                    >
+                        Light Novels
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Comics"
+                    >
+                        Comics
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="DC"
+                    >
+                        DC
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Marvel"
+                    >
+                        Marvel
+                    </button>
+
 
                 </div>
 
 
-                <div class="sidebar-section">
+                <div class="sidebar-note">
 
-                    <div class="sidebar-label">
-                        ARCHIVE TYPES
+                    <div class="sidebar-note-title">
+                        Archive Doctrine
                     </div>
 
-                    <div class="sidebar-ref">
-                        CHARACTERS<br>
-                        HISTORICAL EVENTS<br>
-                        FACTIONS<br>
-                        ARTIFACTS<br>
-                        DOCUMENTS<br>
-                        WORLDS<br>
-                        QUESTIONS<br>
-                        CONFLICTS<br>
-                        POLITICAL SYSTEMS<br>
-                        LOCATIONS<br>
-                        CHRONOLOGIES<br>
-                        UNRESOLVED RECORDS
-                    </div>
 
-                </div>
+                    <div class="sidebar-note-text">
 
+                        A world may be fictional.
 
-                <div class="sidebar-section">
+                        Its history does not have
+                        to feel fictional.
 
-                    <div class="sidebar-label">
-                        ARCHIVE NOTICE
-                    </div>
+                        <br><br>
 
-                    <div class="sidebar-ref">
-                        Original fiction is identified as original
-                        material. Referenced universes are navigation
-                        references.
+                        Every entry is treated as
+                        an archival record.
+
                     </div>
 
                 </div>
 
 
             </div>
+
 
         </aside>
 
 
-        <main class="archive-content">
+        <!-- ==================================================
+             CONTENT
+             ================================================== -->
+
+        <main class="lore-content">
 
 
-            <div class="content-toolbar">
+            <div class="command-bar">
 
-                <div class="breadcrumb">
 
-                    FORBIDDEN LORE WIKI
-                    ·
-                    RESTRICTED HISTORICAL COLLECTION
-                    ·
-                    <strong>ACTIVE RECORD</strong>
+                <div class="command-path">
+
+                    FORBIDDEN LORE
+                    /
+                    ENCYCLOPEDIA
+                    /
+                    <strong>
+                        ACTIVE RECORD
+                    </strong>
+
+                </div>
+
+
+                <div class="command-actions">
+
+
+                    <button
+                        id="search-open"
+                        class="command-button"
+                    >
+                        Search /
+                    </button>
+
+
+                    <button
+                        id="random-lore"
+                        class="command-button"
+                    >
+                        Random Lore
+                    </button>
+
+
+                    <button
+                        id="mobile-index"
+                        class="command-button mobile-index"
+                    >
+                        Index
+                    </button>
+
 
                 </div>
 
-
-                <div class="toolbar-actions">
-
-                    <button
-                        id="search-button"
-                        class="toolbar-button"
-                    >
-                        SEARCH /
-                    </button>
-
-                    <button
-                        id="random-button"
-                        class="toolbar-button"
-                    >
-                        RANDOM DISCOVERY
-                    </button>
-
-                    <button
-                        id="mobile-menu-button"
-                        class="mobile-menu-button"
-                    >
-                        INDEX
-                    </button>
-
-                </div>
 
             </div>
 
+
+            <!-- ==============================================
+                 MOBILE DRAWER
+                 ============================================== -->
 
             <div
                 id="mobile-drawer"
                 class="mobile-drawer"
             >
 
-                <div class="sidebar-section">
 
-                    <div class="sidebar-label">
-                        INDEX
-                    </div>
+                <div class="sidebar-heading">
+                    Codex Index
+                </div>
 
-                    <nav class="sidebar-nav">
+                <div class="sidebar-rule"></div>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="discover"
-                        >
-                            DISCOVER
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="timeline"
-                        >
-                            TIMELINE
-                        </button>
+                <div class="codex-list">
 
-                        <button
-                            class="sidebar-link"
-                            data-type="World"
-                        >
-                            WORLDS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Faction"
-                        >
-                            FACTIONS
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-action="random"
+                    >
+                        Random Lore
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Character"
-                        >
-                            CHARACTERS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Artifact"
-                        >
-                            ARTIFACTS
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-type="World"
+                    >
+                        Original Worlds
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-type="Document"
-                        >
-                            DOCUMENTS
-                        </button>
 
-                    </nav>
+                    <button
+                        class="codex-button"
+                        data-type="Character"
+                    >
+                        Characters
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Historical Event"
+                    >
+                        Historical Events
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Faction"
+                    >
+                        Factions
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Artifact"
+                    >
+                        Artifacts
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Document"
+                    >
+                        Documents
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-type="Unresolved Mystery"
+                    >
+                        Mysteries
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-action="timeline"
+                    >
+                        Timeline
+                    </button>
+
 
                 </div>
 
 
-                <div class="sidebar-section">
+                <div class="sidebar-heading">
+                    Reference Universes
+                </div>
 
-                    <div class="sidebar-label">
-                        REFERENCE UNIVERSES
-                    </div>
+                <div class="sidebar-rule"></div>
 
-                    <nav class="sidebar-nav">
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Anime"
-                        >
-                            ANIME
-                        </button>
+                <div class="codex-list">
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Manhwa"
-                        >
-                            MANHWA
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Manhua"
-                        >
-                            MANHUA
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Anime"
+                    >
+                        Anime
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Donghua"
-                        >
-                            DONGHUA
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Light Novels"
-                        >
-                            LIGHT NOVELS
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Manhwa"
+                    >
+                        Manhwa
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Comics"
-                        >
-                            COMICS
-                        </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="DC"
-                        >
-                            DC
-                        </button>
+                    <button
+                        class="codex-button"
+                        data-reference="Manhua"
+                    >
+                        Manhua
+                    </button>
 
-                        <button
-                            class="sidebar-link"
-                            data-action="reference"
-                            data-reference="Marvel"
-                        >
-                            MARVEL
-                        </button>
 
-                    </nav>
+                    <button
+                        class="codex-button"
+                        data-reference="Donghua"
+                    >
+                        Donghua
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Light Novels"
+                    >
+                        Light Novels
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Comics"
+                    >
+                        Comics
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="DC"
+                    >
+                        DC
+                    </button>
+
+
+                    <button
+                        class="codex-button"
+                        data-reference="Marvel"
+                    >
+                        Marvel
+                    </button>
+
 
                 </div>
+
 
             </div>
 
 
+            <!-- ==============================================
+                 RECORD
+                 ============================================== -->
+
             <section
-                id="record-stage"
-                class="record-stage"
+                id="lore-stage"
+                class="lore-stage"
             >
 
-                <div class="record-header">
+                <article class="codex-page">
 
-                    <div class="record-kicker">
-                        LOADING ARCHIVAL RECORD
-                    </div>
+                    <header class="record-hero">
 
-                    <h1 class="record-title">
-                        INITIALIZING ARCHIVE
-                    </h1>
+                        <div class="record-kicker">
+                            Initialising Forbidden Archive
+                        </div>
 
-                </div>
+                        <h1 class="record-title">
+                            Loading Lore
+                        </h1>
+
+                    </header>
+
+                </article>
 
             </section>
 
 
-            <footer class="archive-footer">
+            <!-- ==============================================
+                 FOOTER
+                 ============================================== -->
+
+            <footer class="lore-footer">
+
 
                 <div>
 
                     FORBIDDEN LORE WIKI
                     ·
-                    FICTIONAL ARCHIVE
+                    FICTIONAL ENCYCLOPEDIA
 
                     <br>
 
-                    ORIGINAL FICTION IS IDENTIFIED AS ORIGINAL
-                    MATERIAL. REFERENCED UNIVERSES ARE NAVIGATION
-                    REFERENCES.
+                    ORIGINAL WORLDS · REFERENCE UNIVERSES ·
+                    CHARACTERS · HISTORY · ARTIFACTS · LORE
+
+                    <br>
+
+                    NO DATABASE · NO LOGIN · NO LOCAL STORAGE ·
+                    NO SERVER-SIDE STATE
 
                 </div>
 
 
-                <div class="archive-footer-right">
-
-                    NO DATABASE
-                    ·
-                    NO LOGIN
-                    ·
-                    NO LOCAL STORAGE
-
-                    <br>
+                <div class="footer-right">
 
                     BROWSER MEMORY ONLY
 
+                    <br>
+
+                    ARCHIVE STATUS: ACTIVE
+
                 </div>
+
 
             </footer>
 
 
         </main>
 
+
     </div>
+
 
 </div>
 
+
+<!-- ============================================================
+     SEARCH WINDOW
+     ============================================================ -->
 
 <div
     id="search-overlay"
     class="search-overlay"
 >
 
-    <div class="search-panel">
 
-        <div class="search-top">
+    <div class="search-window">
+
+
+        <div class="search-titlebar">
+
+
+            <div class="search-icon">
+                ⌕
+            </div>
+
 
             <input
                 id="search-input"
@@ -3474,8 +4728,9 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 type="search"
                 autocomplete="off"
                 spellcheck="false"
-                placeholder="SEARCH ARCHIVE RECORDS..."
+                placeholder="Search worlds, characters, factions, artifacts, events..."
             >
+
 
             <button
                 id="search-close"
@@ -3483,6 +4738,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
             >
                 ESC
             </button>
+
 
         </div>
 
@@ -3492,17 +4748,22 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
             class="search-results"
         ></div>
 
+
     </div>
+
 
 </div>
 
 
 <script>
-__JS__
+
+    __JS__
+
 </script>
 
 
 </body>
+
 </html>
 """
 
@@ -3513,92 +4774,100 @@ __JS__
 
 def build_html():
 
-    theme = random.choice(THEMES)
+    replacements = {
 
-    data_json = json.dumps(
-        SEARCH_DATA,
-        ensure_ascii=False,
-        separators=(",", ":"),
+        "__CSS__":
+            CSS,
+
+        "__SEARCH_DATA__":
+            json.dumps(
+                SEARCH_DATA,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__WORLDS__":
+            json.dumps(
+                WORLDS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__CHARACTERS__":
+            json.dumps(
+                CHARACTERS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__EVENTS__":
+            json.dumps(
+                EVENTS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__FACTIONS__":
+            json.dumps(
+                FACTIONS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__ARTIFACTS__":
+            json.dumps(
+                ARTIFACTS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__DOCUMENTS__":
+            json.dumps(
+                DOCUMENTS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__QUESTIONS__":
+            json.dumps(
+                QUESTIONS,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+        "__REFERENCES__":
+            json.dumps(
+                REFERENCE_UNIVERSES,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+
+    }
+
+
+    js = JS_TEMPLATE
+
+    for key, value in replacements.items():
+
+        js = js.replace(
+            key,
+            value
+        )
+
+
+    output = HTML_TEMPLATE.replace(
+        "__CSS__",
+        CSS
     )
 
-    worlds_json = json.dumps(
-        WORLDS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
 
-    characters_json = json.dumps(
-        CHARACTERS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    events_json = json.dumps(
-        EVENTS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    factions_json = json.dumps(
-        FACTIONS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    artifacts_json = json.dumps(
-        ARTIFACTS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    documents_json = json.dumps(
-        DOCUMENTS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    questions_json = json.dumps(
-        QUESTIONS,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    archive_types_json = json.dumps(
-        ARCHIVE_TYPES,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    )
-
-    reference_json = json.dumps(
-        REFERENCE_UNIVERSES,
-        ensure_ascii=False,
-        separators=(",", ":"),
+    output = output.replace(
+        "__JS__",
+        js
     )
 
 
-    js = (
-        JS_TEMPLATE
-        .replace("__SEARCH_DATA__", data_json)
-        .replace("__WORLDS__", worlds_json)
-        .replace("__CHARACTERS__", characters_json)
-        .replace("__EVENTS__", events_json)
-        .replace("__FACTIONS__", factions_json)
-        .replace("__ARTIFACTS__", artifacts_json)
-        .replace("__DOCUMENTS__", documents_json)
-        .replace("__QUESTIONS__", questions_json)
-        .replace("__ARCHIVE_TYPES__", archive_types_json)
-        .replace("__REFERENCE_UNIVERSES__", reference_json)
-    )
-
-
-    html_output = (
-        HTML_TEMPLATE
-        .replace("__CSS__", CSS)
-        .replace("__JS__", js)
-        .replace("__THEME__", theme)
-    )
-
-    return html_output
+    return output
 
 
 # ============================================================
@@ -3609,30 +4878,37 @@ def main():
 
     OUTPUT_DIR.mkdir(
         parents=True,
-        exist_ok=True,
+        exist_ok=True
     )
 
-    output = build_html()
+
+    output =
+        build_html()
+
 
     OUTPUT_FILE.write_text(
         output,
-        encoding="utf-8",
+        encoding="utf-8"
     )
 
-    print("=" * 62)
-    print("FORBIDDEN LORE WIKI GENERATED")
-    print("=" * 62)
+
+    print("=" * 70)
+    print("FORBIDDEN LORE WIKI")
+    print("STATIC ENCYCLOPEDIA GENERATED")
+    print("=" * 70)
     print(f"Output: {OUTPUT_FILE}")
-    print(f"Records: {len(SEARCH_DATA)}")
-    print("Static HTML: YES")
-    print("Database: NO")
-    print("localStorage: NO")
-    print("sessionStorage: NO")
-    print("IndexedDB: NO")
-    print("Login/Signup: NO")
-    print("Backend: NO")
-    print("Browser memory: YES")
-    print("=" * 62)
+    print(f"Indexed Records: {len(SEARCH_DATA)}")
+    print()
+    print("STATIC SITE: YES")
+    print("DATABASE: NO")
+    print("LOCAL STORAGE: NO")
+    print("SESSION STORAGE: NO")
+    print("INDEXED DB: NO")
+    print("LOGIN: NO")
+    print("SIGNUP: NO")
+    print("BACKEND: NO")
+    print("BROWSER MEMORY: YES")
+    print("=" * 70)
 
 
 if __name__ == "__main__":
