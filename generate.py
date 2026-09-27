@@ -2,7 +2,6 @@ from pathlib import Path
 import html
 import json
 import random
-import textwrap
 
 
 # ============================================================
@@ -188,6 +187,7 @@ CHARACTERS = [
             "A navigator whose log contains precise coordinates for an island "
             "that disappears from every later chart."
         ),
+    },
 ]
 
 
@@ -556,52 +556,14 @@ ARCHIVE_TYPES = [
 
 
 # ============================================================
-# ARTICLE TYPES
-# ============================================================
-
-ARTICLE_TYPES = [
-    "Historical Record",
-    "Recovered Document",
-    "Biographical File",
-    "Chronological Entry",
-    "Restricted Report",
-    "Cross-Reference",
-    "Archaeological Note",
-    "Political Record",
-    "Military Record",
-    "Unresolved Case",
-]
-
-
-# ============================================================
-# THEMES / LAYOUT MODES
+# THEMES
 # ============================================================
 
 THEMES = [
-    {
-        "name": "Obsidian Archive",
-        "class": "theme-obsidian",
-    },
-    {
-        "name": "Paper Registry",
-        "class": "theme-paper",
-    },
-    {
-        "name": "Redacted Bureau",
-        "class": "theme-redacted",
-    },
-    {
-        "name": "Cold Repository",
-        "class": "theme-cold",
-    },
-]
-
-
-LAYOUTS = [
-    "layout-standard",
-    "layout-wide-record",
-    "layout-split-record",
-    "layout-documentary",
+    "theme-obsidian",
+    "theme-paper",
+    "theme-redacted",
+    "theme-cold",
 ]
 
 
@@ -613,26 +575,8 @@ def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def slug(value):
-    value = str(value).lower().strip()
-    result = []
-    for char in value:
-        if char.isalnum():
-            result.append(char)
-        elif char in " _-/":
-            result.append("-")
-    output = "".join(result)
-    while "--" in output:
-        output = output.replace("--", "-")
-    return output.strip("-")
-
-
 def record_id(prefix, index):
     return f"{prefix.upper()}-{index + 1:03d}"
-
-
-def archive_code():
-    return f"ARCH-{random.randint(1000, 9999)}"
 
 
 def build_search_data():
@@ -733,35 +677,29 @@ SEARCH_DATA = build_search_data()
 # ============================================================
 
 CSS = r"""
-/* ============================================================
-   FORBIDDEN LORE WIKI
-   ARCHIVAL INTERFACE
-   ============================================================ */
-
 :root {
     --bg: #11110f;
-    --bg-2: #161612;
-    --panel: #181814;
-    --panel-2: #1d1d18;
+    --panel: #171713;
+    --panel-2: #1c1c17;
     --paper: #d7d0bd;
     --paper-dim: #aaa38f;
     --paper-faint: #777363;
-    --ink: #151512;
     --line: rgba(215, 208, 189, 0.20);
     --line-strong: rgba(215, 208, 189, 0.42);
     --red: #8f302d;
     --red-bright: #b64a44;
     --yellow: #b49a55;
     --green: #6e8b69;
-    --blue: #63798c;
-    --black: #090908;
-    --shadow: rgba(0, 0, 0, 0.45);
+    --shadow: rgba(0, 0, 0, 0.55);
+
     --serif: Georgia, "Times New Roman", serif;
-    --sans: "Arial Narrow", Arial, Helvetica, sans-serif;
+    --sans: Arial, Helvetica, sans-serif;
     --mono: "Courier New", Courier, monospace;
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -775,15 +713,38 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
-    background:
-        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.025), transparent 25%),
-        radial-gradient(circle at 80% 70%, rgba(143,48,45,0.035), transparent 28%),
-        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px),
-        linear-gradient(rgba(255,255,255,0.008) 1px, transparent 1px),
-        var(--bg);
-    background-size: auto, auto, 37px 37px, 37px 37px, auto;
-    font-family: var(--sans);
     overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(255,255,255,0.025),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(143,48,45,0.035),
+            transparent 30%
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.012) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            rgba(255,255,255,0.008) 1px,
+            transparent 1px
+        ),
+        var(--bg);
+
+    background-size:
+        auto,
+        auto,
+        37px 37px,
+        37px 37px,
+        auto;
+
+    font-family: var(--sans);
 }
 
 body::before {
@@ -791,8 +752,10 @@ body::before {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 1000;
-    opacity: 0.09;
+    z-index: 9999;
+
+    opacity: 0.08;
+
     background:
         repeating-linear-gradient(
             0deg,
@@ -801,6 +764,7 @@ body::before {
             transparent 1px,
             transparent 4px
         );
+
     mix-blend-mode: overlay;
 }
 
@@ -813,107 +777,139 @@ button {
     color: inherit;
 }
 
-a {
-    color: inherit;
-}
-
 ::selection {
     background: var(--red);
-    color: #fff;
+    color: white;
 }
 
+
 /* ============================================================
-   FRAME
+   OUTER FRAME
    ============================================================ */
 
 .archive-shell {
     width: min(1600px, 100%);
-    margin: 0 auto;
     min-height: 100vh;
+    margin: 0 auto;
+
     border-left: 1px solid var(--line);
     border-right: 1px solid var(--line);
 }
 
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+
 .archive-topline {
     min-height: 44px;
+
     display: grid;
-    grid-template-columns: minmax(250px, 1fr) auto auto;
-    gap: 0;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+
+    align-items: stretch;
+
     border-bottom: 1px solid var(--line-strong);
-    background: rgba(7, 7, 6, 0.82);
+
+    background: rgba(6,6,5,0.88);
 }
 
 .archive-brand {
     min-width: 0;
+
+    display: flex;
+    align-items: center;
+
     padding: 10px 18px;
+
+    overflow: hidden;
+
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .archive-edition,
 .archive-status {
-    height: 100%;
     display: flex;
     align-items: center;
+
     padding: 10px 16px;
+
     border-left: 1px solid var(--line);
+
     font-family: var(--mono);
     font-size: 10px;
-    letter-spacing: 0.11em;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
     white-space: nowrap;
 }
 
 .archive-status::before {
     content: "";
+
     width: 7px;
     height: 7px;
+
     margin-right: 8px;
+
     border-radius: 50%;
+
     background: var(--green);
-    box-shadow: 0 0 10px rgba(110,139,105,0.35);
+
+    box-shadow:
+        0 0 10px rgba(110,139,105,0.4);
 }
 
+
 /* ============================================================
-   MAIN GRID
+   BODY GRID
    ============================================================ */
 
 .archive-body {
     display: grid;
-    grid-template-columns: 238px minmax(0, 1fr);
+    grid-template-columns: 238px minmax(0,1fr);
+
     min-height: calc(100vh - 44px);
 }
 
 .archive-sidebar {
     border-right: 1px solid var(--line-strong);
+
     background:
-        linear-gradient(180deg, rgba(255,255,255,0.018), transparent 20%),
-        rgba(10, 10, 9, 0.72);
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.018),
+            transparent 25%
+        ),
+        rgba(7,7,6,0.75);
 }
 
 .sidebar-inner {
     position: sticky;
     top: 0;
+
     max-height: 100vh;
     overflow-y: auto;
-    padding: 17px 0 24px;
+
+    padding: 17px 0 25px;
 }
 
 .sidebar-section {
-    padding: 0 14px 17px;
     margin-bottom: 15px;
+    padding: 0 14px 16px;
+
     border-bottom: 1px solid var(--line);
 }
 
 .sidebar-label {
     margin-bottom: 8px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.18em;
@@ -926,18 +922,28 @@ a {
 }
 
 .sidebar-link {
+    width: 100%;
+
     display: flex;
     align-items: baseline;
     gap: 7px;
-    padding: 5px 6px;
+
+    padding: 6px;
+
     border: 0;
+
     background: transparent;
+
     color: var(--paper-dim);
+
     text-align: left;
+
     font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.05em;
+
     cursor: pointer;
+
     transition:
         background 120ms ease,
         color 120ms ease,
@@ -952,7 +958,9 @@ a {
 .sidebar-link:hover,
 .sidebar-link.active {
     padding-left: 11px;
+
     background: rgba(215,208,189,0.055);
+
     color: var(--paper);
 }
 
@@ -961,13 +969,13 @@ a {
 }
 
 .sidebar-ref {
-    display: block;
-    padding: 5px 6px;
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 9px;
-    line-height: 1.5;
+    line-height: 1.65;
 }
+
 
 /* ============================================================
    CONTENT
@@ -975,24 +983,31 @@ a {
 
 .archive-content {
     min-width: 0;
-    padding: 0;
 }
 
 .content-toolbar {
     min-height: 49px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 14px;
+
     padding: 8px 18px;
+
     border-bottom: 1px solid var(--line);
-    background: rgba(15,15,13,0.80);
+
+    background: rgba(15,15,13,0.82);
 }
 
 .breadcrumb {
     min-width: 0;
+
     overflow: hidden;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.08em;
@@ -1008,30 +1023,42 @@ a {
 .toolbar-actions {
     display: flex;
     gap: 6px;
-    flex-shrink: 0;
 }
 
-.toolbar-button {
+.toolbar-button,
+.mobile-menu-button {
     border: 1px solid var(--line);
+
     background: transparent;
+
     color: var(--paper-dim);
-    padding: 6px 9px;
+
+    padding: 7px 10px;
+
     font-family: var(--mono);
     font-size: 9px;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
+    text-transform: uppercase;
+
     cursor: pointer;
 }
 
-.toolbar-button:hover {
+.toolbar-button:hover,
+.mobile-menu-button:hover {
     border-color: var(--line-strong);
     color: var(--paper);
+
     background: rgba(215,208,189,0.04);
+}
+
+.mobile-menu-button {
+    display: none;
 }
 
 .record-stage {
     padding: 23px;
 }
+
 
 /* ============================================================
    RECORD HEADER
@@ -1039,31 +1066,46 @@ a {
 
 .record-header {
     position: relative;
+
+    padding: 23px 24px 20px;
+
     border-top: 1px solid var(--line-strong);
     border-bottom: 1px solid var(--line-strong);
-    padding: 23px 24px 20px;
+
     background:
-        linear-gradient(90deg, rgba(215,208,189,0.022), transparent 60%),
+        linear-gradient(
+            90deg,
+            rgba(215,208,189,0.022),
+            transparent 65%
+        ),
         rgba(19,19,16,0.70);
 }
 
 .record-header::after {
     content: "ARCHIVAL COPY";
+
     position: absolute;
     top: 18px;
     right: 22px;
+
     padding: 5px 8px;
+
     border: 1px solid rgba(143,48,45,0.55);
+
     color: rgba(182,74,68,0.80);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.18em;
+
     transform: rotate(-2deg);
 }
 
 .record-kicker {
     margin-bottom: 12px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 9px;
     letter-spacing: 0.18em;
@@ -1071,38 +1113,49 @@ a {
 }
 
 .record-title {
-    max-width: 980px;
+    max-width: 1050px;
+
     margin: 0;
+
     color: var(--paper);
+
     font-family: var(--serif);
-    font-size: clamp(34px, 5vw, 68px);
+    font-size: clamp(34px,5vw,68px);
     font-weight: normal;
+
     line-height: 0.98;
     letter-spacing: -0.035em;
 }
 
 .record-subtitle {
-    max-width: 880px;
+    max-width: 900px;
+
     margin: 15px 0 0;
+
     color: var(--paper-dim);
+
     font-family: var(--mono);
     font-size: 10px;
     line-height: 1.65;
-    text-transform: uppercase;
     letter-spacing: 0.07em;
+    text-transform: uppercase;
 }
 
 .record-meta {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4,minmax(0,1fr));
+
     margin-top: 23px;
+
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
 }
 
 .meta-cell {
     min-width: 0;
+
     padding: 11px 13px;
+
     border-right: 1px solid var(--line);
 }
 
@@ -1112,8 +1165,11 @@ a {
 
 .meta-label {
     display: block;
+
     margin-bottom: 5px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.13em;
@@ -1122,11 +1178,14 @@ a {
 
 .meta-value {
     display: block;
+
     color: var(--paper);
+
     font-family: var(--mono);
     font-size: 10px;
     line-height: 1.4;
 }
+
 
 /* ============================================================
    RECORD GRID
@@ -1134,23 +1193,26 @@ a {
 
 .record-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 270px;
-    gap: 0;
+    grid-template-columns: minmax(0,1fr) 270px;
+
     border-bottom: 1px solid var(--line-strong);
 }
 
 .record-main {
     min-width: 0;
+
     border-right: 1px solid var(--line-strong);
 }
 
 .record-aside {
     min-width: 0;
+
     background: rgba(7,7,6,0.28);
 }
 
 .archive-block {
     padding: 21px 23px;
+
     border-bottom: 1px solid var(--line);
 }
 
@@ -1162,13 +1224,17 @@ a {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
+
     gap: 12px;
+
     margin-bottom: 12px;
 }
 
 .block-title {
     margin: 0;
+
     color: var(--paper);
+
     font-family: var(--mono);
     font-size: 10px;
     font-weight: normal;
@@ -1178,15 +1244,20 @@ a {
 
 .block-code {
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
+
     white-space: nowrap;
 }
 
 .archive-text {
-    max-width: 880px;
+    max-width: 900px;
+
     margin: 0;
+
     color: var(--paper-dim);
+
     font-family: var(--serif);
     font-size: 16px;
     line-height: 1.72;
@@ -1196,21 +1267,28 @@ a {
     margin-top: 13px;
 }
 
+
 /* ============================================================
    CLASSIFICATION
    ============================================================ */
 
 .classification-box {
     display: inline-block;
+
     min-width: 205px;
+
     margin: 2px 0 4px;
+
     border: 1px solid var(--line-strong);
 }
 
 .classification-heading {
     padding: 7px 10px;
+
     border-bottom: 1px solid var(--line);
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.16em;
@@ -1219,7 +1297,9 @@ a {
 
 .classification-value {
     padding: 10px;
+
     color: var(--red-bright);
+
     font-family: var(--mono);
     font-size: 15px;
     font-weight: bold;
@@ -1227,39 +1307,57 @@ a {
     text-transform: uppercase;
 }
 
+
 /* ============================================================
-   REFERENCE LIST
+   REFERENCES
    ============================================================ */
 
 .reference-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
+
     border-top: 1px solid var(--line);
     border-left: 1px solid var(--line);
 }
 
 .reference-item {
     min-width: 0;
+
     padding: 9px 10px;
+
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
+
+    cursor: pointer;
+
+    transition: background 120ms ease;
+}
+
+.reference-item:hover {
+    background: rgba(215,208,189,0.045);
 }
 
 .reference-id {
     display: block;
+
     color: var(--yellow);
+
     font-family: var(--mono);
     font-size: 9px;
 }
 
 .reference-name {
     display: block;
+
     margin-top: 3px;
+
     color: var(--paper-dim);
+
     font-family: var(--serif);
     font-size: 13px;
     line-height: 1.3;
 }
+
 
 /* ============================================================
    ASIDE
@@ -1267,12 +1365,15 @@ a {
 
 .aside-block {
     padding: 17px 15px;
+
     border-bottom: 1px solid var(--line);
 }
 
 .aside-label {
     margin-bottom: 8px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.16em;
@@ -1281,6 +1382,7 @@ a {
 
 .aside-value {
     color: var(--paper-dim);
+
     font-family: var(--mono);
     font-size: 10px;
     line-height: 1.55;
@@ -1288,21 +1390,30 @@ a {
 
 .stamp {
     display: inline-block;
+
     padding: 5px 7px;
+
     border: 1px solid var(--red);
+
     color: var(--red-bright);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.13em;
     text-transform: uppercase;
+
     transform: rotate(-1deg);
 }
 
 .margin-note {
     padding: 11px;
+
     border-left: 2px solid var(--yellow);
+
     background: rgba(180,154,85,0.035);
+
     color: var(--paper-dim);
+
     font-family: var(--serif);
     font-size: 13px;
     font-style: italic;
@@ -1311,9 +1422,12 @@ a {
 
 .redacted-line {
     display: inline;
+
     padding: 0 4px;
+
     background: #050504;
     color: #050504;
+
     user-select: none;
 }
 
@@ -1321,19 +1435,23 @@ a {
     color: var(--paper-dim);
 }
 
+
 /* ============================================================
-   DISCOVERY STRIP
+   DISCOVERY
    ============================================================ */
 
 .discovery-strip {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+
     border-bottom: 1px solid var(--line-strong);
 }
 
 .discovery-cell {
     min-width: 0;
+
     padding: 17px 18px;
+
     border-right: 1px solid var(--line);
 }
 
@@ -1343,7 +1461,9 @@ a {
 
 .discovery-label {
     margin-bottom: 7px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
     letter-spacing: 0.15em;
@@ -1352,6 +1472,7 @@ a {
 
 .discovery-value {
     color: var(--paper);
+
     font-family: var(--serif);
     font-size: 17px;
     line-height: 1.25;
@@ -1359,10 +1480,13 @@ a {
 
 .discovery-small {
     margin-top: 5px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
 }
+
 
 /* ============================================================
    SEARCH
@@ -1371,12 +1495,17 @@ a {
 .search-overlay {
     position: fixed;
     inset: 0;
+
     z-index: 900;
+
     display: none;
     align-items: flex-start;
     justify-content: center;
+
     padding: 10vh 18px 30px;
-    background: rgba(4,4,3,0.91);
+
+    background: rgba(4,4,3,0.92);
+
     backdrop-filter: blur(7px);
 }
 
@@ -1385,26 +1514,36 @@ a {
 }
 
 .search-panel {
-    width: min(850px, 100%);
+    width: min(850px,100%);
+
     border: 1px solid var(--line-strong);
+
     background: #11110f;
+
     box-shadow: 0 30px 90px var(--shadow);
 }
 
 .search-top {
     display: flex;
     align-items: center;
+
     border-bottom: 1px solid var(--line);
 }
 
 .search-input {
     flex: 1;
+
     min-width: 0;
+
+    padding: 17px;
+
     border: 0;
     outline: 0;
+
     background: transparent;
+
     color: var(--paper);
-    padding: 17px;
+
     font-family: var(--mono);
     font-size: 13px;
 }
@@ -1414,27 +1553,37 @@ a {
 }
 
 .search-close {
+    padding: 17px;
+
     border: 0;
     border-left: 1px solid var(--line);
+
     background: transparent;
+
     color: var(--paper-faint);
-    padding: 17px;
+
     cursor: pointer;
+
     font-family: var(--mono);
     font-size: 10px;
 }
 
 .search-results {
     max-height: 65vh;
+
     overflow-y: auto;
 }
 
 .search-result {
     display: grid;
-    grid-template-columns: 85px minmax(0, 1fr);
+    grid-template-columns: 85px minmax(0,1fr);
+
     gap: 12px;
+
     padding: 12px 16px;
+
     border-bottom: 1px solid var(--line);
+
     cursor: pointer;
 }
 
@@ -1444,50 +1593,48 @@ a {
 
 .search-result-id {
     color: var(--yellow);
+
     font-family: var(--mono);
     font-size: 8px;
 }
 
 .search-result-title {
     color: var(--paper);
+
     font-family: var(--serif);
     font-size: 16px;
 }
 
 .search-result-meta {
     margin-top: 3px;
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
+
     text-transform: uppercase;
 }
 
 .search-result-description {
     margin-top: 7px;
+
     color: var(--paper-dim);
+
     font-family: var(--serif);
     font-size: 12px;
     line-height: 1.45;
 }
 
-/* ============================================================
-   MOBILE MENU
-   ============================================================ */
 
-.mobile-menu-button {
-    display: none;
-    border: 1px solid var(--line);
-    background: transparent;
-    color: var(--paper-dim);
-    padding: 6px 9px;
-    font-family: var(--mono);
-    font-size: 9px;
-    cursor: pointer;
-}
+/* ============================================================
+   MOBILE DRAWER
+   ============================================================ */
 
 .mobile-drawer {
     display: none;
 }
+
 
 /* ============================================================
    FOOTER
@@ -1495,14 +1642,20 @@ a {
 
 .archive-footer {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0,1fr) auto;
+
     gap: 20px;
+
     padding: 15px 18px;
+
     border-top: 1px solid var(--line-strong);
+
     color: var(--paper-faint);
+
     font-family: var(--mono);
     font-size: 8px;
     line-height: 1.6;
+
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
@@ -1511,8 +1664,9 @@ a {
     text-align: right;
 }
 
+
 /* ============================================================
-   SPECIAL MODES
+   THEMES
    ============================================================ */
 
 .theme-paper {
@@ -1535,21 +1689,23 @@ a {
     --line-strong: rgba(200,208,208,0.37);
 }
 
+
 /* ============================================================
-   RESPONSIVE
+   TABLET
    ============================================================ */
 
 @media (max-width: 1050px) {
+
     .archive-body {
-        grid-template-columns: 205px minmax(0, 1fr);
+        grid-template-columns: 205px minmax(0,1fr);
     }
 
     .record-grid {
-        grid-template-columns: minmax(0, 1fr) 225px;
+        grid-template-columns: minmax(0,1fr) 225px;
     }
 
     .record-meta {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2,minmax(0,1fr));
     }
 
     .meta-cell:nth-child(2) {
@@ -1574,9 +1730,15 @@ a {
     }
 }
 
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
 @media (max-width: 760px) {
+
     .archive-topline {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0,1fr) auto;
     }
 
     .archive-edition {
@@ -1613,16 +1775,14 @@ a {
 
     .record-header::after {
         position: static;
+
         display: inline-block;
+
         margin-top: 16px;
     }
 
     .record-title {
-        font-size: clamp(34px, 11vw, 54px);
-    }
-
-    .record-meta {
-        grid-template-columns: 1fr 1fr;
+        font-size: clamp(34px,11vw,54px);
     }
 
     .record-grid {
@@ -1660,30 +1820,39 @@ a {
     .mobile-drawer {
         position: fixed;
         inset: 44px 0 0;
+
         z-index: 700;
+
         overflow-y: auto;
+
         padding: 15px;
+
         background: #0b0b0a;
+
         border-top: 1px solid var(--line-strong);
     }
 
     .mobile-drawer.open {
         display: block;
     }
-
-    .mobile-drawer .sidebar-section {
-        margin-bottom: 10px;
-    }
 }
 
+
+/* ============================================================
+   SMALL PHONES
+   ============================================================ */
+
 @media (max-width: 480px) {
+
     .archive-brand {
         padding-left: 11px;
+
         font-size: 9px;
     }
 
     .archive-status {
         padding: 9px 10px;
+
         font-size: 8px;
     }
 
@@ -1703,10 +1872,6 @@ a {
     .classification-box {
         width: 100%;
         min-width: 0;
-    }
-
-    .toolbar-actions {
-        gap: 3px;
     }
 }
 """
@@ -1731,9 +1896,11 @@ const archiveTypes = __ARCHIVE_TYPES__;
 const referenceUniverses = __REFERENCE_UNIVERSES__;
 
 const sessionSeen = new Set();
+
 let currentRecord = null;
 
 const $ = (selector) => document.querySelector(selector);
+
 
 function escapeHTML(value) {
     return String(value ?? "")
@@ -1744,23 +1911,34 @@ function escapeHTML(value) {
         .replaceAll("'", "&#039;");
 }
 
+
 function choose(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
+
 
 function shuffle(array) {
     return [...array].sort(() => Math.random() - 0.5);
 }
 
+
 function randomFromDifferent(collection, count) {
-    return shuffle(collection).slice(0, Math.min(count, collection.length));
+    return shuffle(collection).slice(
+        0,
+        Math.min(count, collection.length)
+    );
 }
+
 
 function makeRecordId() {
-    return "REC-" + String(Math.floor(10000 + Math.random() * 90000));
+    return "REC-" + String(
+        Math.floor(10000 + Math.random() * 90000)
+    );
 }
 
+
 function statusFor(record) {
+
     const statuses = [
         "RESTRICTED",
         "FRAGMENTARY",
@@ -1770,14 +1948,19 @@ function statusFor(record) {
         "UNRESOLVED"
     ];
 
-    if (record.status && record.status !== "Archived") {
-        return record.status.toUpperCase();
+    if (
+        record.status &&
+        record.status !== "Archived"
+    ) {
+        return String(record.status).toUpperCase();
     }
 
     return choose(statuses);
 }
 
+
 function makeNarrative(record) {
+
     const openings = [
         "The surviving record is incomplete, but several independent references allow the archive to establish a provisional reconstruction.",
         "No single source provides a complete account. The present entry is assembled from surviving references, later citations and disputed archival fragments.",
@@ -1809,7 +1992,9 @@ function makeNarrative(record) {
     ];
 }
 
+
 function makeReferences(record) {
+
     const related = ARCHIVE_DATA
         .filter(item => item.id !== record.id)
         .filter(item =>
@@ -1819,13 +2004,19 @@ function makeReferences(record) {
 
     const pool = related.length
         ? related
-        : ARCHIVE_DATA.filter(item => item.id !== record.id);
+        : ARCHIVE_DATA.filter(
+            item => item.id !== record.id
+        );
 
     return randomFromDifferent(pool, 4);
 }
 
+
 function selectRecord() {
-    const available = ARCHIVE_DATA.filter(item => !sessionSeen.has(item.id));
+
+    const available = ARCHIVE_DATA.filter(
+        item => !sessionSeen.has(item.id)
+    );
 
     let record;
 
@@ -1837,23 +2028,38 @@ function selectRecord() {
     }
 
     sessionSeen.add(record.id);
+
     return record;
 }
 
+
 function buildReferencesHTML(references) {
+
     return references.map(item => `
-        <div class="reference-item" data-record-id="${escapeHTML(item.id)}">
-            <span class="reference-id">${escapeHTML(item.id)}</span>
-            <span class="reference-name">${escapeHTML(item.name)}</span>
+        <div
+            class="reference-item"
+            data-record-id="${escapeHTML(item.id)}"
+        >
+            <span class="reference-id">
+                ${escapeHTML(item.id)}
+            </span>
+
+            <span class="reference-name">
+                ${escapeHTML(item.name)}
+            </span>
         </div>
     `).join("");
 }
 
+
 function buildRecord(record) {
+
     currentRecord = record;
 
     const references = makeReferences(record);
+
     const status = statusFor(record);
+
     const archiveNumber = makeRecordId();
 
     const narrative = makeNarrative(record);
@@ -1872,13 +2078,15 @@ function buildRecord(record) {
             ? choose(classifications)
             : status;
 
-    const recordType = record.type || choose([
-        "Historical Record",
-        "Recovered Document",
-        "Restricted Report",
-        "Cross-Reference",
-        "Unresolved Case"
-    ]);
+    const recordType =
+        record.type ||
+        choose([
+            "Historical Record",
+            "Recovered Document",
+            "Restricted Report",
+            "Cross-Reference",
+            "Unresolved Case"
+        ]);
 
     const referenceWorld =
         record.world ||
@@ -1889,47 +2097,93 @@ function buildRecord(record) {
     const world = escapeHTML(referenceWorld);
 
     const recordHtml = `
+
         <div class="record-header">
+
             <div class="record-kicker">
-                Restricted Historical Collection · ${escapeHTML(archiveNumber)}
+                Restricted Historical Collection
+                ·
+                ${escapeHTML(archiveNumber)}
             </div>
 
-            <h1 class="record-title">${articleTitle}</h1>
+            <h1 class="record-title">
+                ${articleTitle}
+            </h1>
 
             <p class="record-subtitle">
-                ${articleType} · ${world} · Archive Status ${escapeHTML(status)}
+                ${articleType}
+                ·
+                ${world}
+                ·
+                Archive Status
+                ${escapeHTML(status)}
             </p>
 
             <div class="record-meta">
+
                 <div class="meta-cell">
-                    <span class="meta-label">Record</span>
-                    <span class="meta-value">${escapeHTML(record.id)}</span>
+                    <span class="meta-label">
+                        Record
+                    </span>
+
+                    <span class="meta-value">
+                        ${escapeHTML(record.id)}
+                    </span>
                 </div>
 
                 <div class="meta-cell">
-                    <span class="meta-label">Classification</span>
-                    <span class="meta-value">${escapeHTML(classification)}</span>
+                    <span class="meta-label">
+                        Classification
+                    </span>
+
+                    <span class="meta-value">
+                        ${escapeHTML(classification)}
+                    </span>
                 </div>
 
                 <div class="meta-cell">
-                    <span class="meta-label">Source State</span>
-                    <span class="meta-value">${escapeHTML(record.status || "Fragmentary")}</span>
+                    <span class="meta-label">
+                        Source State
+                    </span>
+
+                    <span class="meta-value">
+                        ${escapeHTML(
+                            record.status || "Fragmentary"
+                        )}
+                    </span>
                 </div>
 
                 <div class="meta-cell">
-                    <span class="meta-label">Collection</span>
-                    <span class="meta-value">Forbidden Lore · 01</span>
+                    <span class="meta-label">
+                        Collection
+                    </span>
+
+                    <span class="meta-value">
+                        Forbidden Lore · 01
+                    </span>
                 </div>
+
             </div>
+
         </div>
 
+
         <div class="record-grid">
+
             <main class="record-main">
 
                 <section class="archive-block">
+
                     <div class="block-heading">
-                        <h2 class="block-title">Archival Summary</h2>
-                        <span class="block-code">${escapeHTML(record.id)}</span>
+
+                        <h2 class="block-title">
+                            Archival Summary
+                        </h2>
+
+                        <span class="block-code">
+                            ${escapeHTML(record.id)}
+                        </span>
+
                     </div>
 
                     <p class="archive-text">
@@ -1937,251 +2191,479 @@ function buildRecord(record) {
                     </p>
 
                     ${narrative.map(text => `
-                        <p class="archive-text">${escapeHTML(text)}</p>
+                        <p class="archive-text">
+                            ${escapeHTML(text)}
+                        </p>
                     `).join("")}
+
                 </section>
 
+
                 <section class="archive-block">
+
                     <div class="block-heading">
-                        <h2 class="block-title">Classification</h2>
-                        <span class="block-code">SEC. 04</span>
+
+                        <h2 class="block-title">
+                            Classification
+                        </h2>
+
+                        <span class="block-code">
+                            SEC. 04
+                        </span>
+
                     </div>
 
                     <div class="classification-box">
+
                         <div class="classification-heading">
                             Archive Classification
                         </div>
+
                         <div class="classification-value">
                             ${escapeHTML(classification)}
                         </div>
+
                     </div>
+
                 </section>
 
+
                 <section class="archive-block">
+
                     <div class="block-heading">
-                        <h2 class="block-title">References</h2>
-                        <span class="block-code">CROSS-INDEX</span>
+
+                        <h2 class="block-title">
+                            References
+                        </h2>
+
+                        <span class="block-code">
+                            CROSS-INDEX
+                        </span>
+
                     </div>
 
                     <div class="reference-list">
                         ${buildReferencesHTML(references)}
                     </div>
+
                 </section>
 
+
                 <section class="archive-block">
+
                     <div class="block-heading">
-                        <h2 class="block-title">Archivist Note</h2>
-                        <span class="block-code">NOTE ${Math.floor(Math.random() * 900 + 100)}</span>
+
+                        <h2 class="block-title">
+                            Archivist Note
+                        </h2>
+
+                        <span class="block-code">
+                            NOTE ${Math.floor(
+                                Math.random() * 900 + 100
+                            )}
+                        </span>
+
                     </div>
 
                     <div class="margin-note">
-                        The record has been retained because the contradictions
-                        surrounding it are themselves historically significant.
-                        <span class="redacted-line">classification withheld</span>
+                        The record has been retained because
+                        the contradictions surrounding it are
+                        themselves historically significant.
+                        <span class="redacted-line">
+                            classification withheld
+                        </span>
                         remains attached to the original file.
                     </div>
+
                 </section>
 
             </main>
 
+
             <aside class="record-aside">
 
                 <div class="aside-block">
-                    <div class="aside-label">Record Status</div>
-                    <div class="stamp">${escapeHTML(status)}</div>
-                </div>
 
-                <div class="aside-block">
-                    <div class="aside-label">Archive Location</div>
-                    <div class="aside-value">
-                        Collection 01<br>
-                        Shelf ${Math.floor(Math.random() * 90 + 10)}<br>
-                        Box ${Math.floor(Math.random() * 900 + 100)}<br>
-                        File ${Math.floor(Math.random() * 9000 + 1000)}
+                    <div class="aside-label">
+                        Record Status
                     </div>
+
+                    <div class="stamp">
+                        ${escapeHTML(status)}
+                    </div>
+
                 </div>
 
+
                 <div class="aside-block">
-                    <div class="aside-label">World Reference</div>
+
+                    <div class="aside-label">
+                        Archive Location
+                    </div>
+
+                    <div class="aside-value">
+
+                        Collection 01
+                        <br>
+
+                        Shelf
+                        ${Math.floor(
+                            Math.random() * 90 + 10
+                        )}
+
+                        <br>
+
+                        Box
+                        ${Math.floor(
+                            Math.random() * 900 + 100
+                        )}
+
+                        <br>
+
+                        File
+                        ${Math.floor(
+                            Math.random() * 9000 + 1000
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="aside-block">
+
+                    <div class="aside-label">
+                        World Reference
+                    </div>
+
                     <div class="aside-value">
                         ${world}
                     </div>
+
                 </div>
 
+
                 <div class="aside-block">
-                    <div class="aside-label">Confidence</div>
+
+                    <div class="aside-label">
+                        Confidence
+                    </div>
+
                     <div class="aside-value">
-                        ${Math.floor(Math.random() * 35 + 50)}%
+
+                        ${Math.floor(
+                            Math.random() * 35 + 50
+                        )}%
+
                         <br>
-                        <span style="color:var(--paper-faint)">
+
+                        <span
+                            style="color:var(--paper-faint)"
+                        >
                             provisional reconstruction
                         </span>
+
                     </div>
+
                 </div>
 
+
                 <div class="aside-block">
-                    <div class="aside-label">Cross-Reference Count</div>
-                    <div class="aside-value">
-                        ${Math.floor(Math.random() * 40 + 7)} surviving references
+
+                    <div class="aside-label">
+                        Cross-Reference Count
                     </div>
+
+                    <div class="aside-value">
+
+                        ${Math.floor(
+                            Math.random() * 40 + 7
+                        )}
+                        surviving references
+
+                    </div>
+
                 </div>
 
             </aside>
+
         </div>
 
+
         <div class="discovery-strip">
+
             <div class="discovery-cell">
-                <div class="discovery-label">Current Discovery</div>
+
+                <div class="discovery-label">
+                    Current Discovery
+                </div>
+
                 <div class="discovery-value">
                     ${escapeHTML(record.name)}
                 </div>
+
                 <div class="discovery-small">
                     ${escapeHTML(record.type)}
                 </div>
+
             </div>
 
+
             <div class="discovery-cell">
-                <div class="discovery-label">Related World</div>
+
+                <div class="discovery-label">
+                    Related World
+                </div>
+
                 <div class="discovery-value">
                     ${world}
                 </div>
+
                 <div class="discovery-small">
                     Cross-referenced archive
                 </div>
+
             </div>
 
+
             <div class="discovery-cell">
-                <div class="discovery-label">Next Action</div>
+
+                <div class="discovery-label">
+                    Next Action
+                </div>
+
                 <div class="discovery-value">
                     Trace references
                 </div>
+
                 <div class="discovery-small">
                     Press D for another record
                 </div>
+
             </div>
+
         </div>
     `;
 
     $("#record-stage").innerHTML = recordHtml;
 
-    document.title = `${record.name} · Forbidden Lore Wiki`;
+    document.title =
+        `${record.name} · Forbidden Lore Wiki`;
 
-    document.querySelectorAll("[data-record-id]").forEach(node => {
-        node.addEventListener("click", () => {
-            const id = node.dataset.recordId;
-            const found = ARCHIVE_DATA.find(item => item.id === id);
+    document
+        .querySelectorAll("[data-record-id]")
+        .forEach(node => {
 
-            if (found) {
-                sessionSeen.add(found.id);
-                buildRecord(found);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
+            node.addEventListener("click", () => {
+
+                const id = node.dataset.recordId;
+
+                const found =
+                    ARCHIVE_DATA.find(
+                        item => item.id === id
+                    );
+
+                if (found) {
+
+                    sessionSeen.add(found.id);
+
+                    buildRecord(found);
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                }
+            });
         });
-    });
 }
 
+
 function openSearch() {
+
     const overlay = $("#search-overlay");
+
     overlay.classList.add("open");
 
     const input = $("#search-input");
+
     input.value = "";
+
     input.focus();
 
     renderSearchResults("");
 }
 
+
 function closeSearch() {
-    $("#search-overlay").classList.remove("open");
+
+    $("#search-overlay")
+        .classList.remove("open");
 }
 
+
 function renderSearchResults(query) {
+
     const target = $("#search-results");
-    const normalized = query.trim().toLowerCase();
 
-    const results = ARCHIVE_DATA.filter(item => {
-        if (!normalized) {
-            return true;
-        }
+    const normalized =
+        query.trim().toLowerCase();
 
-        const searchable = [
-            item.id,
-            item.type,
-            item.name,
-            item.world,
-            item.status,
-            item.description
-        ].join(" ").toLowerCase();
+    const results =
+        ARCHIVE_DATA
+            .filter(item => {
 
-        return searchable.includes(normalized);
-    }).slice(0, 40);
+                if (!normalized) {
+                    return true;
+                }
+
+                const searchable = [
+                    item.id,
+                    item.type,
+                    item.name,
+                    item.world,
+                    item.status,
+                    item.description
+                ]
+                    .join(" ")
+                    .toLowerCase();
+
+                return searchable.includes(normalized);
+
+            })
+            .slice(0,40);
+
 
     if (!results.length) {
+
         target.innerHTML = `
-            <div style="padding:24px;color:var(--paper-faint);font-family:var(--mono);font-size:10px;">
+            <div
+                style="
+                    padding:24px;
+                    color:var(--paper-faint);
+                    font-family:var(--mono);
+                    font-size:10px;
+                "
+            >
                 NO MATCHING RECORDS FOUND.
             </div>
         `;
+
         return;
     }
 
-    target.innerHTML = results.map(item => `
-        <div class="search-result" data-search-id="${escapeHTML(item.id)}">
-            <div>
-                <div class="search-result-id">
-                    ${escapeHTML(item.id)}
+
+    target.innerHTML =
+        results.map(item => `
+
+            <div
+                class="search-result"
+                data-search-id="${escapeHTML(item.id)}"
+            >
+
+                <div>
+
+                    <div class="search-result-id">
+                        ${escapeHTML(item.id)}
+                    </div>
+
                 </div>
+
+
+                <div>
+
+                    <div class="search-result-title">
+                        ${escapeHTML(item.name)}
+                    </div>
+
+                    <div class="search-result-meta">
+
+                        ${escapeHTML(item.type)}
+                        ·
+                        ${escapeHTML(
+                            item.world || "UNKNOWN"
+                        )}
+
+                    </div>
+
+                    <div class="search-result-description">
+                        ${escapeHTML(item.description)}
+                    </div>
+
+                </div>
+
             </div>
 
-            <div>
-                <div class="search-result-title">
-                    ${escapeHTML(item.name)}
-                </div>
+        `).join("");
 
-                <div class="search-result-meta">
-                    ${escapeHTML(item.type)}
-                    ·
-                    ${escapeHTML(item.world || "UNKNOWN")}
-                </div>
 
-                <div class="search-result-description">
-                    ${escapeHTML(item.description)}
-                </div>
-            </div>
-        </div>
-    `).join("");
+    document
+        .querySelectorAll("[data-search-id]")
+        .forEach(node => {
 
-    document.querySelectorAll("[data-search-id]").forEach(node => {
-        node.addEventListener("click", () => {
-            const id = node.dataset.searchId;
-            const found = ARCHIVE_DATA.find(item => item.id === id);
+            node.addEventListener("click", () => {
 
-            if (found) {
-                sessionSeen.add(found.id);
-                closeSearch();
-                buildRecord(found);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
+                const id =
+                    node.dataset.searchId;
+
+                const found =
+                    ARCHIVE_DATA.find(
+                        item => item.id === id
+                    );
+
+                if (found) {
+
+                    sessionSeen.add(found.id);
+
+                    closeSearch();
+
+                    buildRecord(found);
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                }
+
+            });
+
         });
+}
+
+
+function toggleMobileMenu() {
+
+    $("#mobile-drawer")
+        .classList.toggle("open");
+}
+
+
+function closeMobileMenu() {
+
+    $("#mobile-drawer")
+        .classList.remove("open");
+}
+
+
+function randomDiscovery() {
+
+    buildRecord(selectRecord());
+
+    closeMobileMenu();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
     });
 }
 
-function toggleMobileMenu() {
-    $("#mobile-drawer").classList.toggle("open");
-}
-
-function closeMobileMenu() {
-    $("#mobile-drawer").classList.remove("open");
-}
-
-function randomDiscovery() {
-    buildRecord(selectRecord());
-    closeMobileMenu();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
 function navigateToType(type) {
-    const found = ARCHIVE_DATA.filter(item => item.type === type);
+
+    const found =
+        ARCHIVE_DATA.filter(
+            item => item.type === type
+        );
 
     if (found.length) {
         buildRecord(choose(found));
@@ -2190,100 +2672,266 @@ function navigateToType(type) {
     }
 
     closeMobileMenu();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
+
 function openTimeline() {
+
     const record = choose(events);
 
     const timelineRecord = {
-        id: "TIM-" + String(Math.floor(100 + Math.random() * 900)),
+
+        id:
+            "TIM-" +
+            String(
+                Math.floor(
+                    100 + Math.random() * 900
+                )
+            ),
+
         type: "Historical Timeline",
+
         name: record.name,
+
         world: record.world,
+
         status: "TIMELINE ENTRY",
+
         description: record.description
     };
 
     buildRecord(timelineRecord);
+
     closeMobileMenu();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
-function showReferenceUniverse() {
-    const reference = choose(referenceUniverses);
+
+function showReferenceUniverse(name) {
+
+    let reference;
+
+    if (name) {
+
+        reference =
+            referenceUniverses.find(
+                item =>
+                    item.name.toLowerCase() ===
+                    name.toLowerCase()
+            );
+    }
+
+    if (!reference) {
+        reference = choose(referenceUniverses);
+    }
 
     const record = {
-        id: "REF-" + String(Math.floor(100 + Math.random() * 900)),
+
+        id:
+            "REF-" +
+            String(
+                Math.floor(
+                    100 + Math.random() * 900
+                )
+            ),
+
         type: "Reference Universe",
+
         name: reference.name,
+
         world: "Reference Collection",
+
         status: "REFERENCE",
+
         description: reference.description
     };
 
     buildRecord(record);
+
     closeMobileMenu();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    buildRecord(selectRecord());
 
-    $("#random-button").addEventListener("click", randomDiscovery);
-    $("#search-button").addEventListener("click", openSearch);
-    $("#search-close").addEventListener("click", closeSearch);
-    $("#mobile-menu-button").addEventListener("click", toggleMobileMenu);
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    $("#search-input").addEventListener("input", event => {
-        renderSearchResults(event.target.value);
-    });
+        buildRecord(selectRecord());
 
-    $("#search-overlay").addEventListener("click", event => {
-        if (event.target === $("#search-overlay")) {
-            closeSearch();
-        }
-    });
 
-    document.querySelectorAll("[data-action='discover']").forEach(button => {
-        button.addEventListener("click", randomDiscovery);
-    });
+        $("#random-button")
+            .addEventListener(
+                "click",
+                randomDiscovery
+            );
 
-    document.querySelectorAll("[data-action='timeline']").forEach(button => {
-        button.addEventListener("click", openTimeline);
-    });
 
-    document.querySelectorAll("[data-action='reference']").forEach(button => {
-        button.addEventListener("click", showReferenceUniverse);
-    });
+        $("#search-button")
+            .addEventListener(
+                "click",
+                openSearch
+            );
 
-    document.querySelectorAll("[data-type]").forEach(button => {
-        button.addEventListener("click", () => {
-            navigateToType(button.dataset.type);
-        });
-    });
 
-    document.addEventListener("keydown", event => {
-        if (
-            event.key === "/" &&
-            document.activeElement !== $("#search-input")
-        ) {
-            event.preventDefault();
-            openSearch();
-        }
+        $("#search-close")
+            .addEventListener(
+                "click",
+                closeSearch
+            );
 
-        if (event.key.toLowerCase() === "d") {
-            if (document.activeElement !== $("#search-input")) {
-                randomDiscovery();
+
+        $("#mobile-menu-button")
+            .addEventListener(
+                "click",
+                toggleMobileMenu
+            );
+
+
+        $("#search-input")
+            .addEventListener(
+                "input",
+                event => {
+                    renderSearchResults(
+                        event.target.value
+                    );
+                }
+            );
+
+
+        $("#search-overlay")
+            .addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target ===
+                        $("#search-overlay")
+                    ) {
+                        closeSearch();
+                    }
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                "[data-action='discover']"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    randomDiscovery
+                );
+
+            });
+
+
+        document
+            .querySelectorAll(
+                "[data-action='timeline']"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    openTimeline
+                );
+
+            });
+
+
+        document
+            .querySelectorAll(
+                "[data-action='reference']"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        showReferenceUniverse(
+                            button.dataset.reference
+                        );
+
+                    }
+                );
+
+            });
+
+
+        document
+            .querySelectorAll("[data-type]")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        navigateToType(
+                            button.dataset.type
+                        );
+
+                    }
+                );
+
+            });
+
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "/" &&
+                    document.activeElement !==
+                        $("#search-input")
+                ) {
+
+                    event.preventDefault();
+
+                    openSearch();
+                }
+
+
+                if (
+                    event.key.toLowerCase() === "d" &&
+                    document.activeElement !==
+                        $("#search-input")
+                ) {
+
+                    randomDiscovery();
+                }
+
+
+                if (event.key === "Escape") {
+
+                    closeSearch();
+
+                    closeMobileMenu();
+                }
+
             }
-        }
+        );
 
-        if (event.key === "Escape") {
-            closeSearch();
-            closeMobileMenu();
-        }
-    });
-});
+    }
+);
 """
 
 
@@ -2293,8 +2941,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 HTML_TEMPLATE = r"""<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -2325,16 +2976,22 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
         content="website"
     >
 
-    <title>The Forbidden Lore Wiki</title>
+    <title>
+        The Forbidden Lore Wiki
+    </title>
 
     <style>
         __CSS__
     </style>
+
 </head>
+
 
 <body class="__THEME__">
 
+
 <div class="archive-shell">
+
 
     <header class="archive-topline">
 
@@ -2355,14 +3012,16 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
     <div class="archive-body">
 
+
         <aside class="archive-sidebar">
 
             <div class="sidebar-inner">
 
+
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Index
+                        INDEX
                     </div>
 
                     <nav class="sidebar-nav">
@@ -2431,7 +3090,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Reference Universes
+                        REFERENCE UNIVERSES
                     </div>
 
                     <nav class="sidebar-nav">
@@ -2439,6 +3098,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Anime"
                         >
                             ANIME
                         </button>
@@ -2446,6 +3106,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Manhwa"
                         >
                             MANHWA
                         </button>
@@ -2453,6 +3114,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Manhua"
                         >
                             MANHUA
                         </button>
@@ -2460,6 +3122,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Donghua"
                         >
                             DONGHUA
                         </button>
@@ -2467,6 +3130,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Light Novels"
                         >
                             LIGHT NOVELS
                         </button>
@@ -2474,6 +3138,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Comics"
                         >
                             COMICS
                         </button>
@@ -2481,6 +3146,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="DC"
                         >
                             DC
                         </button>
@@ -2488,6 +3154,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Marvel"
                         >
                             MARVEL
                         </button>
@@ -2500,7 +3167,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Archive Types
+                        ARCHIVE TYPES
                     </div>
 
                     <div class="sidebar-ref">
@@ -2524,15 +3191,17 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Archive Notice
+                        ARCHIVE NOTICE
                     </div>
 
                     <div class="sidebar-ref">
-                        Original fiction is identified as original material.
-                        Referenced universes are navigation references.
+                        Original fiction is identified as original
+                        material. Referenced universes are navigation
+                        references.
                     </div>
 
                 </div>
+
 
             </div>
 
@@ -2541,15 +3210,19 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
         <main class="archive-content">
 
+
             <div class="content-toolbar">
 
                 <div class="breadcrumb">
+
                     FORBIDDEN LORE WIKI
                     ·
                     RESTRICTED HISTORICAL COLLECTION
                     ·
                     <strong>ACTIVE RECORD</strong>
+
                 </div>
+
 
                 <div class="toolbar-actions">
 
@@ -2557,14 +3230,14 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         id="search-button"
                         class="toolbar-button"
                     >
-                        Search /
+                        SEARCH /
                     </button>
 
                     <button
                         id="random-button"
                         class="toolbar-button"
                     >
-                        Random Discovery
+                        RANDOM DISCOVERY
                     </button>
 
                     <button
@@ -2587,7 +3260,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Index
+                        INDEX
                     </div>
 
                     <nav class="sidebar-nav">
@@ -2649,7 +3322,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 <div class="sidebar-section">
 
                     <div class="sidebar-label">
-                        Reference Universes
+                        REFERENCE UNIVERSES
                     </div>
 
                     <nav class="sidebar-nav">
@@ -2657,6 +3330,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Anime"
                         >
                             ANIME
                         </button>
@@ -2664,6 +3338,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Manhwa"
                         >
                             MANHWA
                         </button>
@@ -2671,6 +3346,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Manhua"
                         >
                             MANHUA
                         </button>
@@ -2678,6 +3354,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Donghua"
                         >
                             DONGHUA
                         </button>
@@ -2685,6 +3362,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Light Novels"
                         >
                             LIGHT NOVELS
                         </button>
@@ -2692,6 +3370,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Comics"
                         >
                             COMICS
                         </button>
@@ -2699,6 +3378,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="DC"
                         >
                             DC
                         </button>
@@ -2706,6 +3386,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                         <button
                             class="sidebar-link"
                             data-action="reference"
+                            data-reference="Marvel"
                         >
                             MARVEL
                         </button>
@@ -2721,34 +3402,55 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
                 id="record-stage"
                 class="record-stage"
             >
+
                 <div class="record-header">
+
                     <div class="record-kicker">
                         LOADING ARCHIVAL RECORD
                     </div>
 
                     <h1 class="record-title">
-                        Initializing Archive
+                        INITIALIZING ARCHIVE
                     </h1>
+
                 </div>
+
             </section>
 
 
             <footer class="archive-footer">
 
                 <div>
-                    FORBIDDEN LORE WIKI · FICTIONAL ARCHIVE
+
+                    FORBIDDEN LORE WIKI
+                    ·
+                    FICTIONAL ARCHIVE
+
                     <br>
-                    ORIGINAL FICTION IS IDENTIFIED AS ORIGINAL MATERIAL.
-                    REFERENCED UNIVERSES ARE NAVIGATION REFERENCES.
+
+                    ORIGINAL FICTION IS IDENTIFIED AS ORIGINAL
+                    MATERIAL. REFERENCED UNIVERSES ARE NAVIGATION
+                    REFERENCES.
+
                 </div>
 
+
                 <div class="archive-footer-right">
-                    NO DATABASE · NO LOGIN · NO LOCAL STORAGE
+
+                    NO DATABASE
+                    ·
+                    NO LOGIN
+                    ·
+                    NO LOCAL STORAGE
+
                     <br>
+
                     BROWSER MEMORY ONLY
+
                 </div>
 
             </footer>
+
 
         </main>
 
@@ -2784,6 +3486,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
         </div>
 
+
         <div
             id="search-results"
             class="search-results"
@@ -2798,6 +3501,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 __JS__
 </script>
 
+
 </body>
 </html>
 """
@@ -2808,67 +3512,69 @@ __JS__
 # ============================================================
 
 def build_html():
-    theme = random.choice(THEMES)["class"]
+
+    theme = random.choice(THEMES)
 
     data_json = json.dumps(
         SEARCH_DATA,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     worlds_json = json.dumps(
         WORLDS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     characters_json = json.dumps(
         CHARACTERS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     events_json = json.dumps(
         EVENTS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     factions_json = json.dumps(
         FACTIONS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     artifacts_json = json.dumps(
         ARTIFACTS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     documents_json = json.dumps(
         DOCUMENTS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     questions_json = json.dumps(
         QUESTIONS,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     archive_types_json = json.dumps(
         ARCHIVE_TYPES,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
 
     reference_json = json.dumps(
         REFERENCE_UNIVERSES,
         ensure_ascii=False,
-        separators=(",", ":")
+        separators=(",", ":"),
     )
+
 
     js = (
         JS_TEMPLATE
@@ -2883,6 +3589,7 @@ def build_html():
         .replace("__ARCHIVE_TYPES__", archive_types_json)
         .replace("__REFERENCE_UNIVERSES__", reference_json)
     )
+
 
     html_output = (
         HTML_TEMPLATE
@@ -2899,13 +3606,17 @@ def build_html():
 # ============================================================
 
 def main():
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     output = build_html()
 
     OUTPUT_FILE.write_text(
         output,
-        encoding="utf-8"
+        encoding="utf-8",
     )
 
     print("=" * 62)
