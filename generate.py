@@ -1,16 +1,24 @@
 from pathlib import Path
+import html
 import json
 import random
-import html
-import textwrap
+import re
 
 
 # ============================================================
 # FORBIDDEN LORE WIKI
-# Python -> single static HTML5 file
+# Complete static-site generator
+# Python generates ONE self-contained HTML file.
+#
+# No database
+# No localStorage
+# No sessionStorage
+# No login/signup
+# No backend
+# Browser memory only
 # ============================================================
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path("site")
 OUTPUT_FILE = OUTPUT_DIR / "index.html"
 
 random.seed(742913)
@@ -136,7 +144,7 @@ CHARACTERS = [
         "period": "5th century A.E.",
         "description": (
             "A fictional commander whose surviving correspondence suggests "
-            "that he opposed the imperial expansion into the Kareth Marches."
+            "that he opposed imperial expansion into the Kareth Marches."
         ),
     },
     {
@@ -171,13 +179,14 @@ CHARACTERS = [
     },
     {
         "name": "Nera Kesh",
-        "world": "Ashen Realms",
+        "world": "The Ashen Realms",
         "role": "Cartographer",
         "period": "Post-Cataclysmic Age",
         "description": (
             "A fictional mapmaker whose surviving charts contain coastlines "
             "not found on any contemporary map."
         ),
+    },
 ]
 
 
@@ -189,7 +198,7 @@ EVENTS = [
     {
         "name": "The First War of Broken Stars",
         "year": "Unknown",
-        "world": "Seven-Star Continuum",
+        "world": "The Seven-Star Continuum",
         "type": "Cosmic conflict",
         "description": (
             "A disputed fictional event described by several civilizations "
@@ -230,7 +239,7 @@ EVENTS = [
     {
         "name": "The Glass Rain",
         "year": "Unknown",
-        "world": "Ashen Realms",
+        "world": "The Ashen Realms",
         "type": "Cataclysm",
         "description": (
             "A fictional environmental disaster described in several "
@@ -246,6 +255,7 @@ EVENTS = [
             "A fictional period during which several independent archives "
             "contain no surviving dated records."
         ),
+    },
 ]
 
 
@@ -274,7 +284,7 @@ FACTIONS = [
     },
     {
         "name": "The Unnamed Observers",
-        "world": "Seven-Star Continuum",
+        "world": "The Seven-Star Continuum",
         "type": "Unknown organization",
         "description": (
             "A fictional organization appearing only in fragments of "
@@ -289,6 +299,7 @@ FACTIONS = [
             "A fictional commercial coalition controlling several northern "
             "river crossings."
         ),
+    },
 ]
 
 
@@ -317,7 +328,7 @@ ARTIFACTS = [
     },
     {
         "name": "The Seven-Point Astrolabe",
-        "world": "Seven-Star Continuum",
+        "world": "The Seven-Star Continuum",
         "classification": "Astronomical instrument",
         "description": (
             "A fictional instrument whose calibration markings do not "
@@ -326,7 +337,7 @@ ARTIFACTS = [
     },
     {
         "name": "The Black Ledger",
-        "world": "Ashen Realms",
+        "world": "The Ashen Realms",
         "classification": "Manuscript",
         "description": (
             "A fictional ledger containing hundreds of names with no "
@@ -376,7 +387,7 @@ DOCUMENTS = [
     },
     {
         "title": "Station Seven Astronomical Register",
-        "world": "Seven-Star Continuum",
+        "world": "The Seven-Star Continuum",
         "date": "Unknown",
         "type": "Astronomical record",
         "status": "Incomplete",
@@ -389,10 +400,7 @@ DOCUMENTS = [
 
 
 # ============================================================
-# CANON REFERENCE CATEGORIES
-#
-# These are deliberately kept as references/categories rather
-# than fabricated "official" canon material.
+# REFERENCE UNIVERSES
 # ============================================================
 
 CANON_GROUPS = [
@@ -483,26 +491,6 @@ CANON_GROUPS = [
 
 
 # ============================================================
-# LEARNING QUESTIONS
-# ============================================================
-
-QUESTIONS = [
-    "Who created it?",
-    "When did it appear?",
-    "Where did it originate?",
-    "Why did it become important?",
-    "How did it change over time?",
-    "Who opposed it?",
-    "What evidence survives?",
-    "What remains uncertain?",
-    "Which sources disagree?",
-    "What happened afterward?",
-    "How does it connect to other events?",
-    "Which interpretations are disputed?",
-]
-
-
-# ============================================================
 # ARTICLE TYPES
 # ============================================================
 
@@ -525,9 +513,21 @@ ARTICLE_TYPES = [
 ]
 
 
-# ============================================================
-# UI THEMES
-# ============================================================
+QUESTIONS = [
+    "Who created it?",
+    "When did it appear?",
+    "Where did it originate?",
+    "Why did it become important?",
+    "How did it change over time?",
+    "Who opposed it?",
+    "What evidence survives?",
+    "What remains uncertain?",
+    "Which sources disagree?",
+    "What happened afterward?",
+    "How does it connect to other events?",
+    "Which interpretations are disputed?",
+]
+
 
 THEMES = [
     {
@@ -593,10 +593,6 @@ THEMES = [
 ]
 
 
-# ============================================================
-# LAYOUT PERSONALITIES
-# ============================================================
-
 LAYOUTS = [
     "classic",
     "terminal",
@@ -617,217 +613,327 @@ def esc(value):
 
 
 def slug(value):
-    result = []
-    for ch in value.lower():
-        if ch.isalnum():
-            result.append(ch)
-        else:
-            result.append("-")
-    return "".join(result).strip("-")
-
-
-def random_item(items):
-    return random.choice(items)
+    value = re.sub(r"[^a-zA-Z0-9]+", "-", str(value).lower())
+    return value.strip("-")
 
 
 def all_lore_names():
-    names = []
+    values = []
 
-    names.extend(item["name"] for item in WORLDS)
-    names.extend(item["name"] for item in CHARACTERS)
-    names.extend(item["name"] for item in EVENTS)
-    names.extend(item["name"] for item in FACTIONS)
-    names.extend(item["name"] for item in ARTIFACTS)
-    names.extend(item["title"] for item in DOCUMENTS)
+    values.extend(item["name"] for item in WORLDS)
+    values.extend(item["name"] for item in CHARACTERS)
+    values.extend(item["name"] for item in EVENTS)
+    values.extend(item["name"] for item in FACTIONS)
+    values.extend(item["name"] for item in ARTIFACTS)
+    values.extend(item["title"] for item in DOCUMENTS)
 
-    return names
+    return values
 
 
 def random_lore_reference(exclude=None):
     values = all_lore_names()
 
-    if exclude and len(values) > 1:
-        values = [x for x in values if x != exclude]
+    if exclude:
+        values = [value for value in values if value != exclude]
 
     return random.choice(values)
 
 
 def random_year():
-    return random.choice([
-        "17 A.E.",
-        "91 A.E.",
-        "238 A.E.",
-        "417 A.E.",
-        "527 A.E.",
-        "611 A.E.",
-        "842 A.E.",
-        "1021 A.E.",
-        "1187 A.E.",
-        "1454 A.E.",
-        "Unknown",
-        "Uncertain",
-        "Before recorded history",
-    ])
+    return random.choice(
+        [
+            "17 A.E.",
+            "91 A.E.",
+            "238 A.E.",
+            "417 A.E.",
+            "527 A.E.",
+            "611 A.E.",
+            "842 A.E.",
+            "1021 A.E.",
+            "1187 A.E.",
+            "1454 A.E.",
+            "Unknown",
+            "Uncertain",
+            "Before recorded history",
+        ]
+    )
 
 
-def generated_fake_scholar():
-    first = random.choice([
-        "Ilyan",
-        "Sera",
-        "Merovan",
-        "Tavian",
-        "Neris",
-        "Alden",
-        "Varo",
-        "Edrin",
-        "Mira",
-        "Calen",
-    ])
+def generated_scholar():
+    first = random.choice(
+        [
+            "Ilyan",
+            "Sera",
+            "Merovan",
+            "Tavian",
+            "Neris",
+            "Alden",
+            "Varo",
+            "Edrin",
+            "Mira",
+            "Calen",
+        ]
+    )
 
-    last = random.choice([
-        "Varek",
-        "Valen",
-        "Edras",
-        "Kesh",
-        "Orin",
-        "Taryn",
-        "Meral",
-        "Dovren",
-        "Salen",
-        "Voss",
-    ])
+    last = random.choice(
+        [
+            "Varek",
+            "Valen",
+            "Edras",
+            "Kesh",
+            "Orin",
+            "Taryn",
+            "Meral",
+            "Dovren",
+            "Salen",
+            "Voss",
+        ]
+    )
 
     return f"{first} {last}"
 
 
-def generated_source_title():
-    titles = [
-        "Administrative Records of the Northern Provinces",
-        "Notes on Early Elarian Chronology",
-        "The Northern Annals",
-        "Archaeological Survey of the Kareth Basin",
-        "Political Institutions of Early Taryn",
-        "The Seven Calendars",
-        "Studies in Imperial Succession",
-        "Fragments of the Old Chronicle",
-        "The Ashen Historical Register",
-        "Catalogue of Unresolved Inscriptions",
-    ]
-    return random.choice(titles)
+def generated_source():
+    return random.choice(
+        [
+            "Administrative Records of the Northern Provinces",
+            "Notes on Early Elarian Chronology",
+            "The Northern Annals",
+            "Archaeological Survey of the Kareth Basin",
+            "Political Institutions of Early Taryn",
+            "The Seven Calendars",
+            "Studies in Imperial Succession",
+            "Fragments of the Old Chronicle",
+            "The Ashen Historical Register",
+            "Catalogue of Unresolved Inscriptions",
+        ]
+    )
 
 
 # ============================================================
-# DYNAMIC ORIGINAL ARTICLE
+# DYNAMIC ARTICLE GENERATOR
 # ============================================================
 
 def build_dynamic_article():
     world = random.choice(WORLDS)
     article_type = random.choice(ARTICLE_TYPES)
-    year = random_year()
-    scholar = generated_fake_scholar()
-    related_1 = random_lore_reference()
-    related_2 = random_lore_reference(exclude=related_1)
-    related_3 = random_lore_reference(exclude=related_1)
 
-    subject_names = [
-        f"The {random.choice(['Northern', 'Second', 'Lost', 'Silent', 'Sevenfold', 'Final'])} "
-        f"{random.choice(['Dynasty', 'Expedition', 'Census', 'War', 'Treaty', 'Chronicle'])}",
-        random.choice(CHARACTERS)["name"],
-        random.choice(ARTIFACTS)["name"],
-        random.choice(EVENTS)["name"],
-        random.choice(FACTIONS)["name"],
+    prefixes = [
+        "Northern",
+        "Second",
+        "Lost",
+        "Silent",
+        "Sevenfold",
+        "Final",
+        "Imperial",
+        "Forgotten",
+        "Outer",
+        "Crownless",
     ]
 
-    subject = random.choice(subject_names)
+    subjects = [
+        "Dynasty",
+        "Expedition",
+        "Census",
+        "War",
+        "Treaty",
+        "Chronicle",
+        "Archive",
+        "Observatory",
+        "Succession",
+        "Settlement",
+        "Conspiracy",
+        "Migration",
+        "Rebellion",
+        "Pilgrimage",
+    ]
+
+    title = (
+        f"The {random.choice(prefixes)} "
+        f"{random.choice(subjects)} of {random.choice(world['regions'])}"
+    )
+
+    related = []
+
+    while len(related) < 4:
+        candidate = random_lore_reference()
+        if candidate not in related:
+            related.append(candidate)
+
+    scholar = generated_scholar()
 
     opening_templates = [
         (
-            f"{subject} is generally associated with the {world['name']} "
-            f"historical record. Surviving material indicates that it played "
-            f"a significant role during the {world['era'].lower()}, although "
-            f"the surviving chronology is incomplete."
+            f"{title} is a reconstructed {article_type.lower()} associated "
+            f"with {world['name']}. The surviving record is incomplete, "
+            f"and later catalogues disagree about its original purpose."
         ),
         (
-            f"Records concerning {subject} are unusually inconsistent. "
-            f"The earliest surviving references appear to place it in "
-            f"{world['name']} around {year}, but later sources assign it "
-            f"a different date."
+            f"References to {title} appear in several fictional archival "
+            f"traditions connected with {world['name']}. No surviving "
+            f"document provides a complete account."
         ),
         (
-            f"Modern researchers use the designation {subject} for a body "
-            f"of evidence associated with {world['name']}. The designation "
-            f"does not necessarily reflect how the original participants "
-            f"understood the subject."
+            f"Modern archival studies place {title} within the wider "
+            f"historical development of {world['name']}. Its chronology "
+            f"remains partially unresolved."
         ),
     ]
 
-    opening = random.choice(opening_templates)
+    sections = [
+        [
+            "Historical context",
+            (
+                f"The available record places this subject within the "
+                f"{world['era']}. Contemporary accounts are limited, "
+                f"while later historians reconstructed the sequence from "
+                f"fragmentary material."
+            ),
+        ],
+        [
+            "Development",
+            (
+                "Later references become more frequent and suggest "
+                "connections with administration, trade, military "
+                "organization, religion or migration. No single "
+                "interpretation accounts for every surviving source."
+            ),
+        ],
+        [
+            "Evidence",
+            (
+                f"The principal evidence consists of manuscripts, "
+                f"inscriptions, administrative fragments and later "
+                f"commentary. {scholar} notes that several sources "
+                f"were copied long after the events they describe."
+            ),
+        ],
+        [
+            "Competing interpretations",
+            (
+                f"{scholar} argues that the conventional reconstruction "
+                f"places excessive weight on later chronicles. Other "
+                f"fictional historians give greater importance to "
+                f"administrative and archaeological evidence."
+            ),
+        ],
+        [
+            "Unresolved questions",
+            (
+                "Several references imply that additional records once "
+                "existed. None has been conclusively recovered, leaving "
+                "important parts of the chronology uncertain."
+            ),
+        ],
+    ]
 
     return {
-        "title": subject,
+        "title": title,
         "subtitle": f"{article_type} · {world['name']}",
         "type": article_type,
         "world": world["name"],
-        "year": year,
+        "year": random_year(),
         "author": scholar,
-        "opening": opening,
-        "sections": [
-            (
-                "Historical context",
-                f"The available record places the subject within a period of "
-                f"political and cultural change. Contemporary accounts are "
-                f"limited, and later historians frequently reconstructed the "
-                f"sequence of events from incomplete material."
-            ),
-            (
-                "Development",
-                f"During the following period, references to {subject} become "
-                f"more frequent. Several records suggest that its importance "
-                f"was connected to trade, administration, military organization "
-                f"or religious practice, although no single interpretation has "
-                f"achieved universal acceptance within the fictional historical "
-                f"record."
-            ),
-            (
-                "Evidence",
-                f"The principal evidence consists of manuscripts, inscriptions, "
-                f"administrative fragments and later commentary. Some sources "
-                f"appear to have been copied centuries after the events they "
-                f"describe, making precise dating difficult."
-            ),
-            (
-                "Competing interpretations",
-                f"{scholar} argues that the conventional interpretation places "
-                f"too much weight on later chronicles. Other fictional scholars "
-                f"maintain that the surviving administrative records provide "
-                f"a more reliable chronology."
-            ),
-            (
-                "Unresolved questions",
-                f"It remains uncertain whether the surviving records represent "
-                f"a complete account. Several references suggest the existence "
-                f"of additional documents that have not been recovered."
-            ),
-        ],
+        "opening": random.choice(opening_templates),
+        "sections": sections,
         "questions": random.sample(QUESTIONS, 6),
-        "related": [related_1, related_2, related_3],
-        "source": generated_source_title(),
-        "source_status": random.choice([
-            "Disputed",
-            "Partially preserved",
-            "Reconstructed",
-            "Incomplete",
-            "Apocryphal",
-            "Uncertain",
-        ]),
+        "related": related,
+        "source": generated_source(),
+        "source_status": random.choice(
+            [
+                "Reconstructed",
+                "Partially preserved",
+                "Disputed",
+                "Incomplete",
+                "Uncertain",
+            ]
+        ),
     }
 
 
 # ============================================================
-# STATIC DATA EMBEDDED INTO GENERATED JS
+# INITIAL ARTICLE
 # ============================================================
 
-DATA = {
+def build_initial_article():
+    world = random.choice(WORLDS)
+
+    return {
+        "title": "The Forbidden Lore Archive",
+        "subtitle": "Open historical index · fictional and referenced worlds",
+        "type": "Archive",
+        "world": world["name"],
+        "year": "Current archive edition",
+        "author": "Archive Editorial System",
+        "opening": (
+            "A research-oriented archive for fictional civilizations, "
+            "characters, conflicts, artifacts, manuscripts and unresolved "
+            "historical questions. Original material is presented as "
+            "fictional reconstruction, while published universes are "
+            "identified as reference categories rather than invented canon."
+        ),
+        "sections": [
+            [
+                "How the archive works",
+                (
+                    "Every discovery is assembled from the archive's "
+                    "fictional records, reference categories and generated "
+                    "research questions. The browser keeps exploration "
+                    "state only in memory."
+                ),
+            ],
+            [
+                "Source boundaries",
+                (
+                    "Original worlds are clearly identified as original "
+                    "fiction. Referenced anime, manga, manhwa, manhua, "
+                    "donghua, light novels, comics, DC and Marvel entries "
+                    "are navigation references and are not presented as "
+                    "official canon."
+                ),
+            ],
+            [
+                "Research method",
+                (
+                    "Entries use the language of historical archives: "
+                    "chronology, provenance, conflicting accounts, "
+                    "documents, archaeological evidence and unresolved "
+                    "questions."
+                ),
+            ],
+            [
+                "Discovery",
+                (
+                    "Use the search field, archive navigation or the "
+                    "Discover button to move between worlds, people, "
+                    "events, factions, artifacts and documents."
+                ),
+            ],
+        ],
+        "questions": [
+            "What is currently known?",
+            "Which sources survive?",
+            "Which accounts disagree?",
+            "What happened before the event?",
+            "What happened afterward?",
+            "Which questions remain unanswered?",
+        ],
+        "related": [
+            "Vael Taryn",
+            "The Seven-Day Silence",
+            "The Ninth Imperial Seal",
+            "The Chronicle of Edras",
+        ],
+        "source": "Forbidden Lore Archive",
+        "source_status": "Archive index",
+    }
+
+
+# ============================================================
+# DATA FOR JAVASCRIPT
+# ============================================================
+
+ARCHIVE_DATA = {
     "worlds": WORLDS,
     "characters": CHARACTERS,
     "events": EVENTS,
@@ -839,59 +945,40 @@ DATA = {
 
 
 # ============================================================
-# HTML GENERATOR
+# COMPLETE CSS
 # ============================================================
 
-def build_html():
-
-    theme = random.choice(THEMES)
-    layout = random.choice(LAYOUTS)
-
-    dynamic_article = build_dynamic_article()
-
-    data_json = json.dumps(DATA, ensure_ascii=False)
-
-    article_json = json.dumps(dynamic_article, ensure_ascii=False)
-
-    css = f"""
-:root {{
-    --bg: {theme["bg"]};
-    --panel: {theme["panel"]};
-    --panel2: {theme["panel2"]};
-    --text: {theme["text"]};
-    --muted: {theme["muted"]};
-    --accent: {theme["accent"]};
-    --accent2: {theme["accent2"]};
-    --line: {theme["line"]};
-    --paper: {theme["paper"]};
-
+CSS = r"""
+:root {
+    --bg: #090b0f;
+    --panel: #11151b;
+    --panel2: #171c23;
+    --text: #e7e2d5;
+    --muted: #92999f;
+    --accent: #c5a86a;
+    --accent2: #6d849b;
+    --line: #2b3138;
+    --paper: #d9d0bc;
     --radius: 14px;
-    --shadow: 0 18px 60px rgba(0,0,0,.25);
-    --max: 1500px;
-}}
+    --shadow: 0 20px 70px rgba(0, 0, 0, .28);
+}
 
-* {{
+* {
     box-sizing: border-box;
-}}
+}
 
-html {{
+html {
+    min-width: 320px;
+    background: var(--bg);
     scroll-behavior: smooth;
-}}
+}
 
-body {{
+body {
     margin: 0;
     min-height: 100vh;
     background:
-        radial-gradient(
-            circle at 15% 10%,
-            color-mix(in srgb, var(--accent) 7%, transparent),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 85% 80%,
-            color-mix(in srgb, var(--accent2) 7%, transparent),
-            transparent 32%
-        ),
+        radial-gradient(circle at 15% 0%, rgba(255,255,255,.035), transparent 28rem),
+        radial-gradient(circle at 90% 20%, rgba(255,255,255,.025), transparent 30rem),
         var(--bg);
     color: var(--text);
     font-family:
@@ -902,1073 +989,1115 @@ body {{
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
-    line-height: 1.7;
-}}
+    line-height: 1.65;
+}
 
 button,
-input,
-select {{
+input {
     font: inherit;
-}}
+}
 
-button {{
+button {
     cursor: pointer;
-}}
+}
 
-a {{
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+a {
     color: inherit;
-}}
+}
 
-::selection {{
+::selection {
     background: var(--accent);
-    color: var(--bg);
-}}
+    color: #111;
+}
 
-.no-script {{
-    padding: 16px;
-    background: #300;
-    color: white;
-    text-align: center;
-}}
+.site-shell {
+    min-height: 100vh;
+}
 
-.site {{
-    width: min(100%, var(--max));
-    margin: auto;
-    padding: 18px;
-}}
-
-.topbar {{
+.topbar {
     position: sticky;
     top: 0;
-    z-index: 100;
-    backdrop-filter: blur(18px);
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    border-bottom: 1px solid var(--line);
-}}
-
-.topbar-inner {{
-    width: min(100%, var(--max));
-    margin: auto;
-    padding: 13px 18px;
+    z-index: 50;
+    min-height: 72px;
     display: flex;
-    gap: 18px;
     align-items: center;
-}}
+    gap: 20px;
+    padding: 12px clamp(16px, 4vw, 48px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(9, 11, 15, .92);
+    backdrop-filter: blur(18px);
+}
 
-.brand {{
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     min-width: max-content;
-    text-decoration: none;
-}}
+    user-select: none;
+}
 
-.brand-title {{
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--accent);
+    color: var(--accent);
     font-family: Georgia, serif;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.brand-copy {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.brand-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
     letter-spacing: .12em;
-}}
-
-.brand-sub {{
-    color: var(--muted);
-    font-size: .67rem;
-    letter-spacing: .16em;
     text-transform: uppercase;
-}}
+}
 
-.search {{
-    flex: 1;
+.brand-subtitle {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.search {
     position: relative;
-}}
+    flex: 1;
+    max-width: 720px;
+    margin: 0 auto;
+}
 
-.search input {{
+.search input {
     width: 100%;
+    height: 44px;
+    padding: 0 46px 0 16px;
     border: 1px solid var(--line);
+    border-radius: 999px;
     background: var(--panel);
     color: var(--text);
-    border-radius: 999px;
-    padding: 11px 16px;
-    outline: none;
-}}
+}
 
-.search input:focus {{
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
-}}
+.search input::placeholder {
+    color: var(--muted);
+}
 
-.top-actions {{
+.search-hint {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 9px);
+    left: 0;
+    right: 0;
+    max-height: 420px;
+    overflow: auto;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+.search-result {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 11px 12px;
+    border-radius: 9px;
+}
+
+.search-result:hover {
+    background: var(--panel2);
+}
+
+.search-result strong {
+    font-size: 13px;
+}
+
+.search-result small {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.empty {
+    padding: 16px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.top-actions {
     display: flex;
     gap: 8px;
-}}
+    min-width: max-content;
+}
 
-.icon-btn,
-.action-btn {{
+.icon-button,
+.action-button {
+    min-height: 42px;
     border: 1px solid var(--line);
+    border-radius: 10px;
     background: var(--panel);
     color: var(--text);
-    border-radius: 10px;
-    padding: 9px 12px;
-}}
+}
 
-.icon-btn:hover,
-.action-btn:hover {{
+.icon-button {
+    width: 42px;
+}
+
+.action-button {
+    padding: 0 15px;
+}
+
+.action-button:hover,
+.icon-button:hover {
     border-color: var(--accent);
     color: var(--accent);
-}}
+}
 
-.app {{
+.menu-button {
+    display: none;
+}
+
+.layout {
     display: grid;
-    grid-template-columns: 245px minmax(0, 1fr);
-    gap: 22px;
-    margin-top: 22px;
-}}
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: calc(100vh - 72px);
+}
 
-.sidebar {{
+.sidebar {
     position: sticky;
-    top: 83px;
-    height: calc(100vh - 105px);
+    top: 72px;
+    height: calc(100vh - 72px);
     overflow: auto;
-    padding-right: 6px;
-}}
+    border-right: 1px solid var(--line);
+    background: rgba(11, 14, 18, .65);
+    padding: 28px 18px;
+}
 
-.sidebar-section {{
-    margin-bottom: 22px;
-}}
+.nav-section {
+    margin-bottom: 30px;
+}
 
-.sidebar-label {{
+.nav-heading {
+    margin: 0 10px 9px;
     color: var(--muted);
-    text-transform: uppercase;
-    font-size: .68rem;
+    font-size: 10px;
     letter-spacing: .16em;
-    margin: 0 0 8px;
-}}
+    text-transform: uppercase;
+}
 
-.nav-item {{
-    display: block;
+.nav-item {
     width: 100%;
+    display: block;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
     text-align: left;
+    font-size: 13px;
+}
+
+.nav-item:hover {
+    background: var(--panel2);
+    color: var(--accent);
+}
+
+.main {
+    min-width: 0;
+    width: 100%;
+}
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding:
+        clamp(55px, 8vw, 100px)
+        clamp(20px, 7vw, 100px)
+        55px;
+    border-bottom: 1px solid var(--line);
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    right: -160px;
+    top: -180px;
+    border: 1px solid rgba(255,255,255,.045);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 40px rgba(255,255,255,.012),
+        0 0 0 80px rgba(255,255,255,.008);
+    pointer-events: none;
+}
+
+.eyebrow {
+    margin-bottom: 18px;
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    max-width: 950px;
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 7vw, 88px);
+    font-weight: 500;
+    letter-spacing: -.045em;
+    line-height: .98;
+}
+
+.hero-description {
+    max-width: 750px;
+    margin: 25px 0 0;
+    color: var(--muted);
+    font-size: clamp(15px, 1.7vw, 18px);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.primary-button {
+    min-height: 46px;
+    padding: 0 19px;
+    border: 1px solid var(--accent);
+    border-radius: 9px;
+    background: var(--accent);
+    color: #10100d;
+    font-weight: 750;
+}
+
+.primary-button:hover {
+    filter: brightness(1.08);
+}
+
+.secondary-button {
+    min-height: 46px;
+    padding: 0 19px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text);
+}
+
+.secondary-button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.content {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 40px clamp(18px, 5vw, 60px) 80px;
+}
+
+.archive-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 40px;
+}
+
+.meta-cell {
+    min-width: 0;
+    padding: 18px 15px;
+    border-right: 1px solid var(--line);
+}
+
+.meta-cell:last-child {
+    border-right: 0;
+}
+
+.meta-label {
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.meta-value {
+    overflow-wrap: anywhere;
+    font-size: 13px;
+}
+
+.article-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 45px;
+}
+
+.article-header {
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--line);
+}
+
+.article-kicker {
+    margin-bottom: 10px;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.article-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(35px, 5vw, 62px);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -.035em;
+}
+
+.article-subtitle {
+    margin: 13px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.article-opening {
+    margin: 32px 0;
+    padding: 22px 0 22px 22px;
+    border-left: 2px solid var(--accent);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 2.2vw, 23px);
+    line-height: 1.55;
+}
+
+.article-section {
+    margin: 0 0 36px;
+}
+
+.article-section h2 {
+    margin: 0 0 11px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.article-section p {
+    margin: 0;
+    color: #c9c7bf;
+    font-size: 15px;
+}
+
+.article-aside {
+    min-width: 0;
+}
+
+.aside-card {
+    margin-bottom: 18px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+}
+
+.aside-title {
+    margin-bottom: 13px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+
+.question {
+    padding: 9px 0;
+    border-top: 1px solid var(--line);
+    color: #c8c7c1;
+    font-size: 12px;
+}
+
+.question:first-of-type {
+    border-top: 0;
+}
+
+.related {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.related button {
+    width: 100%;
+    padding: 8px 0;
     border: 0;
     background: transparent;
     color: var(--text);
-    padding: 9px 10px;
-    border-radius: 9px;
-}}
+    text-align: left;
+    font-size: 12px;
+}
 
-.nav-item:hover {{
-    background: var(--panel);
+.related button:hover {
     color: var(--accent);
-}}
+}
 
-.main {{
-    min-width: 0;
-}}
+.timeline {
+    margin-top: 55px;
+    padding-top: 35px;
+    border-top: 1px solid var(--line);
+}
 
-.hero {{
-    border: 1px solid var(--line);
-    background:
-        linear-gradient(
-            135deg,
-            color-mix(in srgb, var(--accent) 8%, var(--panel)),
-            var(--panel)
-        );
-    border-radius: var(--radius);
-    padding: clamp(24px, 5vw, 55px);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    position: relative;
-}}
-
-.hero::after {{
-    content: "";
-    position: absolute;
-    width: 260px;
-    height: 260px;
-    right: -100px;
-    top: -100px;
-    border-radius: 50%;
-    border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
-}}
-
-.eyebrow {{
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: .18em;
-    font-size: .7rem;
-    font-weight: 700;
-}}
-
-.hero h1 {{
+.timeline-title {
+    margin-bottom: 20px;
     font-family: Georgia, "Times New Roman", serif;
-    font-weight: 500;
-    font-size: clamp(2rem, 5vw, 4.5rem);
-    line-height: 1.03;
-    max-width: 900px;
-    margin: 12px 0;
-}}
+    font-size: 30px;
+}
 
-.hero p {{
-    max-width: 850px;
-    color: var(--muted);
-    font-size: clamp(.98rem, 1.6vw, 1.16rem);
-}}
-
-.hero-meta {{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 20px;
-}}
-
-.tag {{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 9px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: .74rem;
-    background: color-mix(in srgb, var(--panel2) 80%, transparent);
-}}
-
-.content-grid {{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 285px;
-    gap: 22px;
-    margin-top: 22px;
-}}
-
-.article {{
-    min-width: 0;
-}}
-
-.article-card,
-.infobox,
-.panel,
-.timeline,
-.related,
-.document {{
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-}}
-
-.article-card {{
-    padding: clamp(20px, 4vw, 38px);
-}}
-
-.article-header {{
-    padding-bottom: 20px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--line);
-}}
-
-.article-header h2 {{
-    margin: 5px 0;
-    font-family: Georgia, serif;
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 500;
-    line-height: 1.15;
-}}
-
-.article-header p {{
-    color: var(--muted);
-    margin-bottom: 0;
-}}
-
-.article-section {{
-    margin: 30px 0;
-}}
-
-.article-section h3 {{
-    font-family: Georgia, serif;
-    font-weight: 500;
-    font-size: 1.35rem;
-    margin-bottom: 8px;
-}}
-
-.article-section p {{
-    color: color-mix(in srgb, var(--text) 88%, var(--muted));
-}}
-
-.callout {{
-    margin: 25px 0;
-    padding: 17px 19px;
-    border-left: 3px solid var(--accent);
-    background: color-mix(in srgb, var(--accent) 5%, var(--panel));
-}}
-
-.infobox {{
-    height: max-content;
-    overflow: hidden;
-}}
-
-.infobox-title {{
-    padding: 16px;
-    font-family: Georgia, serif;
-    font-size: 1.25rem;
-    background: var(--panel2);
-    border-bottom: 1px solid var(--line);
-}}
-
-.info-row {{
-    display: grid;
-    grid-template-columns: 40% 60%;
-    border-bottom: 1px solid var(--line);
-}}
-
-.info-row:last-child {{
-    border-bottom: 0;
-}}
-
-.info-key,
-.info-value {{
-    padding: 10px 12px;
-}}
-
-.info-key {{
-    color: var(--muted);
-    font-size: .77rem;
-}}
-
-.info-value {{
-    font-size: .82rem;
-}}
-
-.source-box {{
-    margin-top: 22px;
-    padding: 17px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--panel2);
-}}
-
-.source-status {{
-    color: var(--accent);
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-}}
-
-.source-title {{
-    font-family: Georgia, serif;
-    margin-top: 6px;
-}}
-
-.explore-grid {{
+.timeline-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 22px;
-}}
+}
 
-.explore-card {{
-    border: 1px solid var(--line);
-    background: var(--panel);
-    padding: 17px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition:
-        transform .2s ease,
-        border-color .2s ease,
-        background .2s ease;
-}}
-
-.explore-card:hover {{
-    transform: translateY(-3px);
-    border-color: var(--accent);
-    background: var(--panel2);
-}}
-
-.explore-card small {{
-    display: block;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    font-size: .63rem;
-}}
-
-.explore-card strong {{
-    display: block;
-    margin-top: 5px;
-    font-family: Georgia, serif;
-    font-size: 1rem;
-}}
-
-.questions {{
-    display: grid;
-    gap: 8px;
-}}
-
-.question {{
-    padding: 13px 15px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--panel2);
-}}
-
-.question::before {{
-    content: "→";
-    color: var(--accent);
-    margin-right: 10px;
-}}
-
-.timeline {{
-    padding: 22px;
-    margin-top: 22px;
-}}
-
-.timeline-track {{
-    display: grid;
-    grid-template-columns: repeat(5, minmax(100px, 1fr));
-    gap: 10px;
-    overflow-x: auto;
-}}
-
-.timeline-item {{
-    border-left: 2px solid var(--accent);
-    padding: 10px 12px;
-    min-width: 140px;
-}}
-
-.timeline-year {{
-    color: var(--accent);
-    font-size: .75rem;
-}}
-
-.timeline-name {{
-    font-family: Georgia, serif;
-    margin-top: 5px;
-}}
-
-.discovery {{
-    margin-top: 22px;
-    padding: 22px;
-    border: 1px dashed var(--line);
-    border-radius: var(--radius);
-    background: color-mix(in srgb, var(--accent) 3%, var(--panel));
-}}
-
-.discovery-title {{
-    color: var(--accent);
-    font-size: .7rem;
-    text-transform: uppercase;
-    letter-spacing: .16em;
-}}
-
-.discovery h3 {{
-    margin: 8px 0;
-    font-family: Georgia, serif;
-    font-weight: 500;
-}}
-
-.mobile-nav {{
-    display: none;
-}}
-
-.overlay {{
-    display: none;
-}}
-
-.search-results {{
-    position: absolute;
-    z-index: 500;
-    left: 0;
-    right: 0;
-    top: calc(100% + 8px);
-    background: var(--panel);
+.timeline-card {
+    min-width: 0;
+    padding: 18px;
     border: 1px solid var(--line);
     border-radius: 12px;
-    box-shadow: var(--shadow);
-    max-height: 360px;
-    overflow: auto;
-}}
+    background: var(--panel);
+}
 
-.search-result {{
-    padding: 11px 13px;
-    border-bottom: 1px solid var(--line);
-    cursor: pointer;
-}}
+.timeline-year {
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
 
-.search-result:last-child {{
-    border-bottom: 0;
-}}
+.timeline-card h3 {
+    margin: 8px 0 7px;
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: 500;
+}
 
-.search-result:hover {{
-    background: var(--panel2);
-}}
-
-.search-result small {{
-    display: block;
+.timeline-card p {
+    margin: 0;
     color: var(--muted);
-    font-size: .67rem;
-}}
+    font-size: 12px;
+}
 
-.empty {{
-    padding: 22px;
-    color: var(--muted);
-    text-align: center;
-}}
-
-.footer {{
-    margin: 45px 0 15px;
-    padding: 20px 0;
+.footer {
+    padding: 35px clamp(18px, 5vw, 60px);
     border-top: 1px solid var(--line);
     color: var(--muted);
-    font-size: .76rem;
+    font-size: 11px;
+}
+
+.footer-inner {
+    max-width: 1120px;
+    margin: auto;
     display: flex;
     justify-content: space-between;
-    gap: 15px;
-    flex-wrap: wrap;
-}}
+    gap: 20px;
+}
 
-body.layout-terminal {{
-    font-family: "Courier New", monospace;
-}}
+.menu-overlay {
+    display: none;
+}
 
-body.layout-terminal .hero h1,
-body.layout-terminal .article-header h2,
-body.layout-terminal h3,
-body.layout-terminal .brand-title {{
-    font-family: "Courier New", monospace;
-}}
+.menu-open .menu-overlay {
+    display: block;
+}
 
-body.layout-terminal .hero {{
-    border-radius: 3px;
-}}
+.layout.classic .article-opening {
+    background: linear-gradient(90deg, rgba(255,255,255,.018), transparent);
+}
 
-body.layout-manuscript {{
-    background:
-        radial-gradient(circle at center, #18150f, #080806 70%);
-}}
+.layout.terminal .article-title {
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+    letter-spacing: -.025em;
+}
 
-body.layout-manuscript .article-card,
-body.layout-manuscript .hero {{
-    border-radius: 2px;
-}}
+.layout.terminal .article-opening {
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        monospace;
+    font-size: 15px;
+}
 
-body.layout-manuscript .article-card {{
-    background:
-        linear-gradient(
-            rgba(217,208,188,.025),
-            rgba(217,208,188,.025)
-        ),
-        var(--panel);
-}}
+.layout.manuscript .article-section p,
+.layout.manuscript .article-opening {
+    font-family: Georgia, "Times New Roman", serif;
+}
 
-body.layout-casefile .article-card {{
-    border-left: 4px solid var(--accent);
-}}
+.layout.manuscript .article-title {
+    font-family: Georgia, "Times New Roman", serif;
+}
 
-body.layout-museum .explore-card {{
-    border-radius: 2px;
-}}
+.layout.research .article-layout {
+    grid-template-columns: minmax(0, 1fr) 310px;
+}
 
-body.layout-minimal .sidebar {{
-    opacity: .78;
-}}
+.layout.museum .article-title {
+    letter-spacing: .015em;
+}
 
-@media (max-width: 1050px) {{
-    .app {{
-        grid-template-columns: 205px minmax(0, 1fr);
-    }}
+.layout.minimal .hero::after {
+    display: none;
+}
 
-    .content-grid {{
-        grid-template-columns: 1fr;
-    }}
+.layout.casefile .article-header {
+    border-top: 3px solid var(--accent);
+    padding-top: 20px;
+}
 
-    .infobox {{
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-    }}
+@media (max-width: 1050px) {
+    .layout {
+        grid-template-columns: 235px minmax(0, 1fr);
+    }
 
-    .infobox-title {{
-        grid-column: 1 / -1;
-    }}
-}}
+    .article-layout {
+        grid-template-columns: minmax(0, 1fr) 230px;
+        gap: 28px;
+    }
 
-@media (max-width: 760px) {{
-    .site {{
-        padding: 10px;
-    }}
+    .timeline-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
 
-    .topbar-inner {{
-        padding: 10px;
-        flex-wrap: wrap;
-    }}
+@media (max-width: 820px) {
+    .topbar {
+        gap: 10px;
+    }
 
-    .brand {{
-        flex: 1;
-    }}
-
-    .search {{
-        order: 5;
-        flex-basis: 100%;
-    }}
-
-    .app {{
-        display: block;
-    }}
-
-    .sidebar {{
+    .brand-subtitle {
         display: none;
+    }
+
+    .menu-button {
+        display: block;
+        order: 4;
+    }
+
+    .top-actions .desktop-action {
+        display: none;
+    }
+
+    .layout {
+        display: block;
+    }
+
+    .sidebar {
         position: fixed;
-        z-index: 300;
+        z-index: 45;
+        top: 72px;
         left: 0;
-        top: 0;
-        bottom: 0;
-        width: min(82vw, 320px);
-        height: 100vh;
-        background: var(--bg);
-        border-right: 1px solid var(--line);
-        padding: 80px 18px 20px;
-    }}
+        width: min(310px, 88vw);
+        height: calc(100vh - 72px);
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: var(--shadow);
+        background: #0d1015;
+    }
 
-    body.menu-open .sidebar {{
-        display: block;
-    }}
+    .menu-open .sidebar {
+        transform: translateX(0);
+    }
 
-    .mobile-nav {{
-        display: inline-flex;
-    }}
-
-    .hero {{
-        padding: 25px 19px;
-    }}
-
-    .hero h1 {{
-        font-size: 2.2rem;
-    }}
-
-    .explore-grid {{
-        grid-template-columns: 1fr;
-    }}
-
-    .infobox {{
-        display: block;
-    }}
-
-    .timeline-track {{
-        grid-template-columns: repeat(5, 145px);
-    }}
-
-    .overlay {{
+    .menu-overlay {
         position: fixed;
-        inset: 0;
-        z-index: 200;
-        background: rgba(0,0,0,.65);
-    }}
+        z-index: 40;
+        inset: 72px 0 0;
+        background: rgba(0,0,0,.58);
+    }
 
-    body.menu-open .overlay {{
-        display: block;
-    }}
+    .article-layout {
+        grid-template-columns: 1fr;
+    }
 
-    .footer {{
-        display: block;
-    }}
+    .article-aside {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
 
-    .footer > * {{
-        margin-bottom: 8px;
-    }}
-}}
+    .aside-card {
+        margin: 0;
+    }
+}
 
-@media (max-width: 430px) {{
-    .top-actions .desktop-only {{
+@media (max-width: 620px) {
+    .topbar {
+        min-height: 64px;
+        padding: 9px 12px;
+    }
+
+    .sidebar {
+        top: 64px;
+        height: calc(100vh - 64px);
+    }
+
+    .menu-overlay {
+        inset: 64px 0 0;
+    }
+
+    .brand-title {
+        font-size: 13px;
+    }
+
+    .brand-mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .search-hint {
         display: none;
-    }}
+    }
 
-    .hero h1 {{
-        font-size: 1.9rem;
-    }}
+    .search input {
+        height: 40px;
+        padding-left: 12px;
+    }
 
-    .article-card {{
-        padding: 18px 15px;
-    }}
+    .top-actions {
+        gap: 4px;
+    }
 
-    .article-header h2 {{
-        font-size: 1.8rem;
-    }}
-}}
+    .icon-button {
+        width: 38px;
+        min-height: 38px;
+    }
 
-@media (prefers-reduced-motion: reduce) {{
-    *,
-    *::before,
-    *::after {{
-        scroll-behavior: auto !important;
-        animation-duration: .001ms !important;
-        transition-duration: .001ms !important;
-    }}
-}}
+    .layout {
+        min-height: calc(100vh - 64px);
+    }
+
+    .hero {
+        padding: 48px 18px 42px;
+    }
+
+    .hero h1 {
+        font-size: clamp(38px, 13vw, 58px);
+    }
+
+    .content {
+        padding: 30px 15px 60px;
+    }
+
+    .archive-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .meta-cell:nth-child(2) {
+        border-right: 0;
+    }
+
+    .meta-cell:nth-child(-n+2) {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .article-title {
+        font-size: 38px;
+    }
+
+    .article-opening {
+        padding-left: 16px;
+        font-size: 18px;
+    }
+
+    .article-aside {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 430px) {
+    .brand-copy {
+        display: none;
+    }
+
+    .topbar {
+        padding: 9px 10px;
+    }
+
+    .search {
+        max-width: none;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+    }
+
+    .archive-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .meta-cell {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .meta-cell:last-child {
+        border-bottom: 0;
+    }
+}
 """
 
-    html_document = f"""<!DOCTYPE html>
+
+# ============================================================
+# COMPLETE HTML
+# ============================================================
+
+def build_html():
+    theme = random.choice(THEMES)
+    layout = random.choice(LAYOUTS)
+
+    initial_article = build_initial_article()
+
+    data_json = json.dumps(
+        ARCHIVE_DATA,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+
+    article_json = json.dumps(
+        initial_article,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+
+    theme_css = (
+        f":root{{--bg:{theme['bg']};"
+        f"--panel:{theme['panel']};"
+        f"--panel2:{theme['panel2']};"
+        f"--text:{theme['text']};"
+        f"--muted:{theme['muted']};"
+        f"--accent:{theme['accent']};"
+        f"--accent2:{theme['accent2']};"
+        f"--line:{theme['line']};"
+        f"--paper:{theme['paper']};}}"
+    )
+
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<title>Forbidden Lore Wiki — The Historical Archive of Fictional Worlds</title>
 
-<meta name="description"
-      content="Forbidden Lore Archive — an interactive fictional knowledge archive.">
+<meta
+    name="description"
+    content="A research-style fictional lore archive covering original worlds, characters, civilizations, events, factions, artifacts, documents and reference universes."
+>
 
-<meta name="theme-color"
-      content="{theme["bg"]}">
+<meta
+    name="keywords"
+    content="fictional lore wiki, fictional history, anime lore, manhwa lore, manhua lore, donghua, light novels, comics, DC, Marvel, worldbuilding, fictional encyclopedia"
+>
 
-<title>Forbidden Lore Archive</title>
+<meta name="robots" content="index,follow">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Forbidden Lore Wiki">
+<meta property="og:description" content="A serious archive for fictional worlds, histories, characters, artifacts and unresolved lore.">
 
 <style>
-{css}
+{CSS}
+{theme_css}
 </style>
 </head>
 
-<body class="layout-{layout}">
+<body class="layout {esc(layout)}">
 
-<noscript>
-    <div class="no-script">
-        JavaScript is required for the interactive archive.
-    </div>
-</noscript>
+<div class="site-shell">
 
 <header class="topbar">
 
-    <div class="topbar-inner">
+    <div class="brand">
+        <div class="brand-mark">FL</div>
+
+        <div class="brand-copy">
+            <div class="brand-title">Forbidden Lore</div>
+            <div class="brand-subtitle">Historical Archive</div>
+        </div>
+    </div>
+
+    <div class="search">
+
+        <input
+            id="searchInput"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Search the archive..."
+            aria-label="Search the archive"
+        >
+
+        <span class="search-hint">/</span>
+
+        <div
+            id="searchResults"
+            class="search-results"
+            hidden
+        ></div>
+
+    </div>
+
+    <div class="top-actions">
 
         <button
-            class="icon-btn mobile-nav"
-            id="menuButton"
-            aria-label="Open navigation">
-            ☰
+            id="randomButton"
+            class="action-button desktop-action"
+            type="button"
+        >
+            Discover
         </button>
 
-        <a href="#top" class="brand">
-            <div class="brand-title">FORBIDDEN LORE</div>
-            <div class="brand-sub">Knowledge Archive</div>
-        </a>
-
-        <div class="search">
-
-            <input
-                id="searchInput"
-                type="search"
-                autocomplete="off"
-                placeholder="Search the archive..."
-                aria-label="Search the archive">
-
-            <div
-                id="searchResults"
-                class="search-results"
-                hidden>
-            </div>
-
-        </div>
-
-        <div class="top-actions">
-
-            <button
-                class="icon-btn desktop-only"
-                id="randomButton"
-                title="Discover another article">
-                ⤨
-            </button>
-
-            <button
-                class="icon-btn"
-                id="closeMenuButton"
-                hidden>
-                ×
-            </button>
-
-        </div>
+        <button
+            id="menuButton"
+            class="icon-button menu-button"
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded="false"
+        >
+            ☰
+        </button>
 
     </div>
 
 </header>
 
 
-<div class="overlay" id="overlay"></div>
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="nav-section">
+
+            <div class="nav-heading">Archive</div>
+
+            <button
+                class="nav-item"
+                data-action="home"
+                type="button"
+            >
+                Archive Index
+            </button>
+
+            <button
+                class="nav-item"
+                data-action="random"
+                type="button"
+            >
+                Random Discovery
+            </button>
+
+            <button
+                class="nav-item"
+                data-action="timeline"
+                type="button"
+            >
+                Historical Timeline
+            </button>
+
+        </div>
 
 
-<div class="site" id="top">
+        <div class="nav-section">
 
-    <div class="app">
+            <div class="nav-heading">Original Worlds</div>
 
-        <aside class="sidebar" id="sidebar">
+            <div id="worldNav"></div>
 
-            <div class="sidebar-section">
+        </div>
 
-                <div class="sidebar-label">
-                    Archive
-                </div>
 
-                <button class="nav-item" data-action="home">
-                    Overview
+        <div class="nav-section">
+
+            <div class="nav-heading">Reference Universes</div>
+
+            <div id="canonNav"></div>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <div class="nav-heading">Archive Types</div>
+
+            <div id="typeNav"></div>
+
+        </div>
+
+    </aside>
+
+
+    <div
+        id="overlay"
+        class="menu-overlay"
+    ></div>
+
+
+    <main class="main">
+
+        <section class="hero">
+
+            <div class="eyebrow">
+                Restricted Historical Collection
+            </div>
+
+            <h1>
+                The Forbidden<br>
+                Lore Wiki
+            </h1>
+
+            <p class="hero-description">
+                An archival interface for fictional civilizations,
+                forgotten wars, impossible documents, characters,
+                artifacts, political systems and the stories hidden
+                between worlds.
+            </p>
+
+            <div class="hero-actions">
+
+                <button
+                    id="heroDiscover"
+                    class="primary-button"
+                    type="button"
+                >
+                    Discover Something Else
                 </button>
 
-                <button class="nav-item" data-action="random">
-                    Random discovery
+                <button
+                    class="secondary-button"
+                    data-action="timeline"
+                    type="button"
+                >
+                    Open Timeline
                 </button>
 
-                <button class="nav-item" data-action="timeline">
-                    Historical timeline
-                </button>
+            </div>
+
+        </section>
+
+
+        <div class="content">
+
+            <div class="archive-meta">
+
+                <div class="meta-cell">
+                    <div class="meta-label">Collection</div>
+                    <div class="meta-value">Forbidden Lore</div>
+                </div>
+
+                <div class="meta-cell">
+                    <div class="meta-label">Edition</div>
+                    <div class="meta-value">Archive 01</div>
+                </div>
+
+                <div class="meta-cell">
+                    <div class="meta-label">Classification</div>
+                    <div class="meta-value">Mixed Records</div>
+                </div>
+
+                <div class="meta-cell">
+                    <div class="meta-label">State</div>
+                    <div class="meta-value" id="archiveState">
+                        Active
+                    </div>
+                </div>
 
             </div>
 
 
-            <div class="sidebar-section">
+            <article id="articleContainer"></article>
 
-                <div class="sidebar-label">
-                    Original worlds
+
+            <section
+                id="timelineSection"
+                class="timeline"
+            >
+
+                <div class="timeline-title">
+                    Selected Chronology
                 </div>
 
-                <div id="worldNav"></div>
-
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <div class="sidebar-label">
-                    Reference collections
-                </div>
-
-                <div id="canonNav"></div>
-
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <div class="sidebar-label">
-                    Article types
-                </div>
-
-                <div id="typeNav"></div>
-
-            </div>
-
-        </aside>
-
-
-        <main class="main">
-
-            <section class="hero">
-
-                <div class="eyebrow">
-                    Archive session
-                </div>
-
-                <h1 id="heroTitle">
-                    Forbidden Lore Archive
-                </h1>
-
-                <p id="heroDescription">
-                    A constantly changing reference environment for
-                    fictional worlds, histories, characters, documents,
-                    civilizations and unresolved mysteries.
-                </p>
-
-                <div class="hero-meta">
-
-                    <span class="tag">
-                        Static
-                    </span>
-
-                    <span class="tag">
-                        Browser memory
-                    </span>
-
-                    <span class="tag">
-                        Session #{random.randint(1000, 9999)}
-                    </span>
-
-                    <span class="tag">
-                        Interface: {esc(theme["name"])}
-                    </span>
-
-                </div>
+                <div
+                    id="timelineGrid"
+                    class="timeline-grid"
+                ></div>
 
             </section>
 
+        </div>
 
-            <div class="content-grid">
+    </main>
 
-                <article class="article">
-
-                    <div class="article-card">
-
-                        <header class="article-header">
-
-                            <div class="eyebrow" id="articleType">
-                                {esc(dynamic_article["type"])}
-                            </div>
-
-                            <h2 id="articleTitle">
-                                {esc(dynamic_article["title"])}
-                            </h2>
-
-                            <p id="articleSubtitle">
-                                {esc(dynamic_article["subtitle"])}
-                            </p>
-
-                        </header>
+</div>
 
 
-                        <div id="articleBody">
+<footer class="footer">
 
-                        </div>
+    <div class="footer-inner">
 
+        <div>
+            FORBIDDEN LORE WIKI · FICTIONAL ARCHIVE
+        </div>
 
-                        <div class="source-box">
-
-                            <div class="source-status">
-                                Source status
-                            </div>
-
-                            <div
-                                class="source-title"
-                                id="sourceStatus">
-                                {esc(dynamic_article["source_status"])}
-                            </div>
-
-                            <p id="sourceText">
-                                This entry belongs to the fictional
-                                archive layer. Its internal sources,
-                                scholars and documents are part of the
-                                constructed setting.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <section class="discovery">
-
-                        <div class="discovery-title">
-                            Continue your investigation
-                        </div>
-
-                        <h3 id="discoveryTitle">
-                            Follow the evidence
-                        </h3>
-
-                        <p id="discoveryText">
-                            Every refresh produces another route through
-                            the archive.
-                        </p>
-
-                    </section>
-
-
-                    <section class="timeline" id="timelineSection">
-
-                        <div class="eyebrow">
-                            Selected chronology
-                        </div>
-
-                        <h3>
-                            Related historical sequence
-                        </h3>
-
-                        <div
-                            class="timeline-track"
-                            id="timeline">
-                        </div>
-
-                    </section>
-
-
-                    <section class="explore-grid" id="relatedGrid">
-                    </section>
-
-                </article>
-
-
-                <aside>
-
-                    <div class="infobox">
-
-                        <div class="infobox-title">
-                            Archive record
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">Subject</div>
-                            <div class="info-value" id="infoSubject">
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">World</div>
-                            <div class="info-value" id="infoWorld">
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">Period</div>
-                            <div class="info-value" id="infoYear">
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">Classification</div>
-                            <div class="info-value" id="infoType">
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">Researcher</div>
-                            <div class="info-value" id="infoAuthor">
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <div class="info-key">Reference</div>
-                            <div class="info-value" id="infoSource">
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="panel" style="margin-top:22px; padding:18px;">
-
-                        <div class="eyebrow">
-                            Questions to investigate
-                        </div>
-
-                        <div
-                            class="questions"
-                            id="questions"
-                            style="margin-top:12px;">
-                        </div>
-
-                    </div>
-
-                </aside>
-
-            </div>
-
-
-            <footer class="footer">
-
-                <div>
-                    FORBIDDEN LORE ARCHIVE
-                </div>
-
-                <div>
-                    Original fictional material is identified as such.
-                    Canon references are not presented as invented canon.
-                </div>
-
-                <div>
-                    Session memory only · Refresh resets state
-                </div>
-
-            </footer>
-
-        </main>
+        <div>
+            Original fiction is identified as original material.
+            Referenced universes are navigation references.
+        </div>
 
     </div>
+
+</footer>
 
 </div>
 
@@ -1977,48 +2106,44 @@ body.layout-minimal .sidebar {{
 
 "use strict";
 
-
-// ============================================================
-// EMBEDDED DATA
-// ============================================================
-
 const ARCHIVE_DATA = {data_json};
 
 const INITIAL_ARTICLE = {article_json};
 
 
-// ============================================================
-// SESSION MEMORY
-// ============================================================
-
 const memory = {{
-    currentArticle: INITIAL_ARTICLE,
-    visited: [],
+    seen: [],
     searchTerm: "",
-    selectedWorld: null,
-    selectedType: null,
     menuOpen: false,
-    layout: "{layout}",
-    theme: "{esc(theme["name"])}"
+    discoveryCount: 0,
+    currentArticle: null
 }};
 
-
-// ============================================================
-// DOM HELPERS
-// ============================================================
 
 function $(selector) {{
     return document.querySelector(selector);
 }}
 
-function createElement(tag, className, text = "") {{
+
+function escapeHTML(value) {{
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}}
+
+
+function createElement(tag, className, text) {{
+
     const element = document.createElement(tag);
 
     if (className) {{
         element.className = className;
     }}
 
-    if (text) {{
+    if (text !== undefined) {{
         element.textContent = text;
     }}
 
@@ -2026,283 +2151,53 @@ function createElement(tag, className, text = "") {{
 }}
 
 
-// ============================================================
-// HTML ESCAPING
-// ============================================================
+function remember(value) {{
 
-function escapeHTML(value) {{
-    const div = document.createElement("div");
-    div.textContent = value ?? "";
-    return div.innerHTML;
-}}
-
-
-// ============================================================
-// ARTICLE RENDERING
-// ============================================================
-
-function renderArticle(article) {{
-
-    memory.currentArticle = article;
-
-    if (!memory.visited.includes(article.title)) {{
-        memory.visited.push(article.title);
+    if (!value) {{
+        return;
     }}
 
-    $("#articleType").textContent = article.type;
+    if (!memory.seen.includes(value)) {{
+        memory.seen.push(value);
+    }}
 
-    $("#articleTitle").textContent = article.title;
-
-    $("#articleSubtitle").textContent = article.subtitle;
-
-    $("#infoSubject").textContent = article.title;
-
-    $("#infoWorld").textContent = article.world;
-
-    $("#infoYear").textContent = article.year;
-
-    $("#infoType").textContent = article.type;
-
-    $("#infoAuthor").textContent = article.author;
-
-    $("#infoSource").textContent = article.source;
-
-    $("#sourceStatus").textContent = article.source_status;
-
-    const body = $("#articleBody");
-
-    body.innerHTML = "";
-
-    const opening = createElement("p");
-
-    opening.textContent = article.opening;
-
-    body.appendChild(opening);
+    if (memory.seen.length > 100) {{
+        memory.seen.shift();
+    }}
+}}
 
 
-    const callout = createElement("div", "callout");
+function randomFrom(array) {{
 
-    callout.textContent =
-        "Archive note: the following reconstruction contains " +
-        "internal fictional scholarship, disputed records and " +
-        "deliberately incomplete evidence.";
-
-    body.appendChild(callout);
-
-
-    article.sections.forEach(section => {{
-
-        const wrapper = createElement("section", "article-section");
-
-        const heading = createElement("h3");
-
-        heading.textContent = section[0];
-
-        const paragraph = createElement("p");
-
-        paragraph.textContent = section[1];
-
-        wrapper.appendChild(heading);
-
-        wrapper.appendChild(paragraph);
-
-        body.appendChild(wrapper);
-
-    }});
-
-
-    const questions = $("#questions");
-
-    questions.innerHTML = "";
-
-    article.questions.forEach(question => {{
-
-        const item = createElement("div", "question");
-
-        item.textContent = question;
-
-        questions.appendChild(item);
-
-    }});
-
-
-    const related = $("#relatedGrid");
-
-    related.innerHTML = "";
-
-    article.related.forEach(name => {{
-
-        const card = createElement("div", "explore-card");
-
-        const small = createElement(
-            "small",
-            "",
-            "Related record"
-        );
-
-        const strong = createElement(
-            "strong",
-            "",
-            name
-        );
-
-        card.appendChild(small);
-
-        card.appendChild(strong);
-
-        card.addEventListener("click", () => {{
-            discoverByName(name);
-        }});
-
-        related.appendChild(card);
-
-    }});
-
-
-    renderTimeline(article);
-
-    $("#discoveryTitle").textContent =
-        "The archive contains another connection.";
-
-    $("#discoveryText").textContent =
-        "You have explored " +
-        memory.visited.length +
-        " record" +
-        (memory.visited.length === 1 ? "" : "s") +
-        " during this session. Follow a related record or refresh " +
-        "the page to receive a different archive.";
+    return array[
+        Math.floor(Math.random() * array.length)
+    ];
 
 }}
 
 
-// ============================================================
-// TIMELINE
-// ============================================================
+function uniqueRandomFrom(array, count) {{
 
-function renderTimeline(article) {{
+    const copy = [...array];
+    const result = [];
 
-    const timeline = $("#timeline");
+    while (copy.length && result.length < count) {{
 
-    timeline.innerHTML = "";
+        const index =
+            Math.floor(Math.random() * copy.length);
 
-    const source = [
-        ...ARCHIVE_DATA.events
-    ].sort(() => Math.random() - 0.5)
-     .slice(0, 5);
-
-    source.forEach(event => {{
-
-        const item = createElement("div", "timeline-item");
-
-        const year = createElement(
-            "div",
-            "timeline-year",
-            event.year
+        result.push(
+            copy.splice(index, 1)[0]
         );
+    }}
 
-        const name = createElement(
-            "div",
-            "timeline-name",
-            event.name
-        );
-
-        item.appendChild(year);
-
-        item.appendChild(name);
-
-        item.addEventListener("click", () => {{
-            discoverByName(event.name);
-        }});
-
-        timeline.appendChild(item);
-
-    }});
+    return result;
 }}
 
 
-// ============================================================
-// RANDOM ARTICLE GENERATOR
-// ============================================================
+function allNames() {{
 
-function generateRandomArticle() {{
-
-    const world =
-        ARCHIVE_DATA.worlds[
-            Math.floor(Math.random() * ARCHIVE_DATA.worlds.length)
-        ];
-
-    const types = [
-        "Civilization",
-        "Character",
-        "Historical Event",
-        "Faction",
-        "Artifact",
-        "Document",
-        "Battle",
-        "Political System",
-        "Religion",
-        "Technology",
-        "Location",
-        "Historical Mystery",
-        "Cosmic Event",
-        "Language",
-        "Dynasty"
-    ];
-
-    const type =
-        types[Math.floor(Math.random() * types.length)];
-
-    const subjects = [
-        "The Silent Census",
-        "The Northern Dynasty",
-        "The Seventh Archive",
-        "The Lost Expedition",
-        "The Kareth Dispute",
-        "The Ashen Treaty",
-        "The Unnamed Observatory",
-        "The Final Provincial Record",
-        "The Glass Rain",
-        "The Forgotten Succession",
-        "The Black Ledger",
-        "The Seven-Day Silence",
-        "The Empty Throne",
-        "The Broken Calendar",
-        "The Ninth Seal"
-    ];
-
-    const title =
-        subjects[Math.floor(Math.random() * subjects.length)];
-
-    const scholars = [
-        "Ilyan Varek",
-        "Sera Valen",
-        "Merovan Edras",
-        "Tavian Kesh",
-        "Neris Orin",
-        "Alden Taryn"
-    ];
-
-    const author =
-        scholars[Math.floor(Math.random() * scholars.length)];
-
-    const years = [
-        "17 A.E.",
-        "91 A.E.",
-        "238 A.E.",
-        "417 A.E.",
-        "527 A.E.",
-        "611 A.E.",
-        "842 A.E.",
-        "1187 A.E.",
-        "1454 A.E.",
-        "Unknown",
-        "Uncertain"
-    ];
-
-    const year =
-        years[Math.floor(Math.random() * years.length)];
-
-    const relatedPool = [
+    return [
         ...ARCHIVE_DATA.worlds.map(x => x.name),
         ...ARCHIVE_DATA.characters.map(x => x.name),
         ...ARCHIVE_DATA.events.map(x => x.name),
@@ -2311,518 +2206,31 @@ function generateRandomArticle() {{
         ...ARCHIVE_DATA.documents.map(x => x.title)
     ];
 
-    const shuffled =
-        relatedPool.sort(() => Math.random() - 0.5);
-
-    const related = shuffled
-        .filter(x => x !== title)
-        .slice(0, 3);
-
-    const questions = [
-        "Who created it?",
-        "When did it appear?",
-        "Where did it originate?",
-        "Why did it become important?",
-        "How did it change over time?",
-        "Who opposed it?",
-        "What evidence survives?",
-        "What remains uncertain?",
-        "Which sources disagree?",
-        "What happened afterward?",
-        "How does it connect to other events?",
-        "Which interpretations are disputed?"
-    ].sort(() => Math.random() - 0.5).slice(0, 6);
-
-    const sourceTitles = [
-        "Administrative Records of the Northern Provinces",
-        "Notes on Early Elarian Chronology",
-        "The Northern Annals",
-        "Archaeological Survey of the Kareth Basin",
-        "Political Institutions of Early Taryn",
-        "The Seven Calendars",
-        "Studies in Imperial Succession"
-    ];
-
-    const statuses = [
-        "Disputed",
-        "Partially preserved",
-        "Reconstructed",
-        "Incomplete",
-        "Apocryphal",
-        "Uncertain"
-    ];
-
-    return {{
-        title: title,
-        subtitle: type + " · " + world.name,
-        type: type,
-        world: world.name,
-        year: year,
-        author: author,
-
-        opening:
-            title +
-            " is associated with the historical record of " +
-            world.name +
-            ". Surviving material suggests that the subject was " +
-            "important during a period of political and cultural change, " +
-            "although the chronology remains incomplete.",
-
-        sections: [
-            [
-                "Historical context",
-                "The available record places the subject within a " +
-                "period of political and cultural change. Contemporary " +
-                "accounts are limited, and later historians reconstructed " +
-                "the sequence from incomplete material."
-            ],
-            [
-                "Development",
-                "Later references become more frequent and suggest " +
-                "connections with trade, administration, military " +
-                "organization or religious practice. The surviving " +
-                "records do not establish a single explanation."
-            ],
-            [
-                "Evidence",
-                "The principal evidence consists of manuscripts, " +
-                "inscriptions, administrative fragments and later " +
-                "commentary. Several sources were copied long after " +
-                "the events they describe."
-            ],
-            [
-                "Competing interpretations",
-                author +
-                " argues that the conventional interpretation gives " +
-                "too much weight to later chronicles. Other scholars " +
-                "place greater importance on administrative evidence."
-            ],
-            [
-                "Unresolved questions",
-                "Several references imply that additional records " +
-                "once existed. None has been conclusively recovered."
-            ]
-        ],
-
-        questions: questions,
-
-        related: related,
-
-        source:
-            sourceTitles[
-                Math.floor(Math.random() * sourceTitles.length)
-            ],
-
-        source_status:
-            statuses[
-                Math.floor(Math.random() * statuses.length)
-            ]
-    }};
 }}
 
 
-// ============================================================
-// DISCOVERY
-// ============================================================
+function getRandomName(exclude = []) {{
 
-function discoverRandom() {{
-
-    const article = generateRandomArticle();
-
-    renderArticle(article);
-
-    window.scrollTo({{
-        top: 0,
-        behavior: "smooth"
-    }});
-
-}}
-
-
-function discoverByName(name) {{
-
-    const world =
-        ARCHIVE_DATA.worlds.find(x => x.name === name);
-
-    if (world) {{
-
-        const article = {{
-            title: world.name,
-            subtitle: world.type + " · " + world.era,
-            type: "World",
-            world: world.name,
-            year: world.founded,
-            author: "Archive reconstruction",
-
-            opening: world.description,
-
-            sections: [
-                [
-                    "Geography",
-                    world.name +
-                    " contains the following recorded regions: " +
-                    world.regions.join(", ") +
-                    "."
-                ],
-                [
-                    "Political structure",
-                    "The surviving record describes the political system " +
-                    "as " + world.government + "."
-                ],
-                [
-                    "Economy",
-                    "Historical reconstruction identifies " +
-                    world.currency +
-                    " as the principal recorded currency."
-                ],
-                [
-                    "Language",
-                    "The principal recorded language is " +
-                    world.language +
-                    "."
-                ],
-                [
-                    "Historical questions",
-                    "The dates associated with the foundation and later " +
-                    "development remain subject to interpretation."
-                ]
-            ],
-
-            questions: [
-                "When was the world established?",
-                "Who ruled it?",
-                "What languages were spoken?",
-                "How did its political system function?",
-                "What caused major historical changes?",
-                "Which records survive?"
-            ],
-
-            related: [
-                ...ARCHIVE_DATA.events
-                    .filter(x => x.world === world.name)
-                    .map(x => x.name)
-                    .slice(0, 3)
-            ],
-
-            source: "World reconstruction archive",
-
-            source_status: "Original fictional setting"
-        }};
-
-        renderArticle(article);
-
-        closeMenu();
-
-        return;
-    }}
-
-    const character =
-        ARCHIVE_DATA.characters.find(x => x.name === name);
-
-    if (character) {{
-
-        renderArticle({{
-            title: character.name,
-            subtitle: character.role + " · " + character.world,
-            type: "Character",
-            world: character.world,
-            year: character.period,
-            author: "Character archive",
-
-            opening: character.description,
-
-            sections: [
-                [
-                    "Role",
-                    character.name +
-                    " is recorded as a " +
-                    character.role +
-                    " in the fictional historical archive."
-                ],
-                [
-                    "Historical context",
-                    "The character is associated with " +
-                    character.world +
-                    " and the period " +
-                    character.period + "."
-                ],
-                [
-                    "Recorded legacy",
-                    "Later records interpret the figure differently, " +
-                    "particularly when discussing political responsibility."
-                ],
-                [
-                    "Sources",
-                    "References include fictional chronicles, later " +
-                    "historical commentary and reconstructed records."
-                ]
-            ],
-
-            questions: [
-                "Who was this person?",
-                "What did they change?",
-                "Who opposed them?",
-                "What sources mention them?",
-                "When did they disappear from the record?",
-                "How reliable are the accounts?"
-            ],
-
-            related: [
-                character.world,
-                ...ARCHIVE_DATA.events
-                    .filter(x => x.world === character.world)
-                    .map(x => x.name)
-                    .slice(0, 2)
-            ],
-
-            source: "Biographical archive",
-
-            source_status: "Reconstructed"
-        }});
-
-        closeMenu();
-
-        return;
-    }}
-
-    discoverRandom();
-}}
-
-
-// ============================================================
-// SEARCH INDEX
-// ============================================================
-
-function buildSearchIndex() {{
-
-    const index = [];
-
-    ARCHIVE_DATA.worlds.forEach(item => {{
-        index.push({{
-            name: item.name,
-            category: "World",
-            searchable:
-                item.name + " " +
-                item.type + " " +
-                item.description
-        }});
-    }});
-
-    ARCHIVE_DATA.characters.forEach(item => {{
-        index.push({{
-            name: item.name,
-            category: "Character",
-            searchable:
-                item.name + " " +
-                item.world + " " +
-                item.role + " " +
-                item.description
-        }});
-    }});
-
-    ARCHIVE_DATA.events.forEach(item => {{
-        index.push({{
-            name: item.name,
-            category: "Event",
-            searchable:
-                item.name + " " +
-                item.world + " " +
-                item.type + " " +
-                item.description
-        }});
-    }});
-
-    ARCHIVE_DATA.factions.forEach(item => {{
-        index.push({{
-            name: item.name,
-            category: "Faction",
-            searchable:
-                item.name + " " +
-                item.world + " " +
-                item.type + " " +
-                item.description
-        }});
-    }});
-
-    ARCHIVE_DATA.artifacts.forEach(item => {{
-        index.push({{
-            name: item.name,
-            category: "Artifact",
-            searchable:
-                item.name + " " +
-                item.world + " " +
-                item.classification + " " +
-                item.description
-        }});
-    }});
-
-    ARCHIVE_DATA.documents.forEach(item => {{
-        index.push({{
-            name: item.title,
-            category: "Document",
-            searchable:
-                item.title + " " +
-                item.world + " " +
-                item.type + " " +
-                item.excerpt
-        }});
-    }});
-
-    ARCHIVE_DATA.canonGroups.forEach(group => {{
-
-        group.items.forEach(item => {{
-
-            index.push({{
-                name: item,
-                category: group.name,
-                searchable: item + " " + group.name
-            }});
-
-        }});
-
-    }});
-
-    return index;
-}}
-
-const SEARCH_INDEX = buildSearchIndex();
-
-
-// ============================================================
-// SEARCH
-// ============================================================
-
-function performSearch(query) {{
-
-    const container = $("#searchResults");
-
-    query = query.trim().toLowerCase();
-
-    memory.searchTerm = query;
-
-    if (!query) {{
-        container.hidden = true;
-        container.innerHTML = "";
-        return;
-    }}
-
-    const results = SEARCH_INDEX
-        .filter(item =>
-            item.searchable.toLowerCase().includes(query)
-        )
-        .slice(0, 12);
-
-    container.innerHTML = "";
-
-    if (!results.length) {{
-
-        const empty = createElement(
-            "div",
-            "empty",
-            "No matching archive record."
+    const available =
+        allNames().filter(
+            name => !exclude.includes(name)
         );
 
-        container.appendChild(empty);
-
-    }} else {{
-
-        results.forEach(result => {{
-
-            const row = createElement(
-                "div",
-                "search-result"
-            );
-
-            const title = createElement(
-                "strong",
-                "",
-                result.name
-            );
-
-            const category = createElement(
-                "small",
-                "",
-                result.category
-            );
-
-            row.appendChild(title);
-
-            row.appendChild(category);
-
-            row.addEventListener("click", () => {{
-
-                discoverByName(result.name);
-
-                $("#searchInput").value = "";
-
-                container.hidden = true;
-
-            }});
-
-            container.appendChild(row);
-
-        }});
-
-    }}
-
-    container.hidden = false;
+    return randomFrom(
+        available.length
+            ? available
+            : allNames()
+    );
 }}
 
 
 // ============================================================
-// SIDEBAR
+// DYNAMIC DISCOVERY
 // ============================================================
 
-function buildNavigation() {{
+function generateRandomArticle() {{
 
-    const worldNav = $("#worldNav");
-
-    ARCHIVE_DATA.worlds.forEach(world => {{
-
-        const button = createElement(
-            "button",
-            "nav-item",
-            world.name
-        );
-
-        button.addEventListener("click", () => {{
-            discoverByName(world.name);
-        }});
-
-        worldNav.appendChild(button);
-
-    }});
-
-
-    const canonNav = $("#canonNav");
-
-    ARCHIVE_DATA.canonGroups.forEach(group => {{
-
-        const button = createElement(
-            "button",
-            "nav-item",
-            group.name
-        );
-
-        button.addEventListener("click", () => {{
-
-            const item =
-                group.items[
-                    Math.floor(
-                        Math.random() * group.items.length
-                    )
-                ];
-
-            showReferenceCollection(group.name, item);
-
-        }});
-
-        canonNav.appendChild(button);
-
-    }});
-
-
-    const typeNav = $("#typeNav");
+    const world = randomFrom(ARCHIVE_DATA.worlds);
 
     const types = [
         "Civilization",
@@ -2840,21 +2248,1540 @@ function buildNavigation() {{
         "Cosmic Event"
     ];
 
-    types.forEach(type => {{
+    const prefixes = [
+        "Northern",
+        "Second",
+        "Lost",
+        "Silent",
+        "Sevenfold",
+        "Final",
+        "Imperial",
+        "Forgotten",
+        "Outer",
+        "Crownless",
+        "Ashen",
+        "Hidden",
+        "Last",
+        "Western"
+    ];
 
-        const button = createElement(
-            "button",
-            "nav-item",
-            type
+    const nouns = [
+        "Dynasty",
+        "Expedition",
+        "Census",
+        "War",
+        "Treaty",
+        "Chronicle",
+        "Archive",
+        "Observatory",
+        "Succession",
+        "Settlement",
+        "Conspiracy",
+        "Migration",
+        "Rebellion",
+        "Pilgrimage",
+        "Compact",
+        "Protocol",
+        "Inheritance"
+    ];
+
+    const locations = [
+        ...world.regions,
+        "the northern frontier",
+        "the old capital",
+        "the western archives",
+        "the lower river",
+        "the abandoned observatory"
+    ];
+
+    const title =
+        "The " +
+        randomFrom(prefixes) +
+        " " +
+        randomFrom(nouns) +
+        " of " +
+        randomFrom(locations);
+
+    const type = randomFrom(types);
+
+    const scholarNames = [
+        "Ilyan Varek",
+        "Sera Valen",
+        "Merovan Edras",
+        "Tavian Kesh",
+        "Neris Orin",
+        "Alden Taryn",
+        "Mira Dovren",
+        "Calen Voss"
+    ];
+
+    const scholar = randomFrom(scholarNames);
+
+    const relatedPool = allNames();
+
+    const related =
+        uniqueRandomFrom(
+            relatedPool.filter(
+                item => item !== title
+            ),
+            4
         );
 
-        button.addEventListener("click", () => {{
+    return {{
+        title: title,
 
-            showTypeCollection(type);
+        subtitle:
+            type +
+            " · " +
+            world.name,
+
+        type: type,
+
+        world: world.name,
+
+        year: randomFrom([
+            "17 A.E.",
+            "91 A.E.",
+            "238 A.E.",
+            "417 A.E.",
+            "527 A.E.",
+            "611 A.E.",
+            "842 A.E.",
+            "1021 A.E.",
+            "1187 A.E.",
+            "1454 A.E.",
+            "Unknown",
+            "Uncertain"
+        ]),
+
+        author: scholar,
+
+        opening:
+            title +
+            " is associated with the historical record of " +
+            world.name +
+            ". Surviving material suggests that the subject "
+            +
+            "was significant during a period of political and "
+            +
+            "cultural change, although the chronology remains "
+            +
+            "incomplete.",
+
+        sections: [
+
+            [
+                "Historical context",
+
+                "The available record places the subject within "
+                +
+                world.era +
+                ". Contemporary accounts are limited, while "
+                +
+                "later historians reconstructed the sequence "
+                +
+                "from incomplete material."
+            ],
+
+            [
+                "Development",
+
+                "Later references become more frequent and "
+                +
+                "suggest connections with administration, trade, "
+                +
+                "military organization, religious practice or "
+                +
+                "migration. The surviving records do not "
+                +
+                "establish a single explanation."
+            ],
+
+            [
+                "Evidence",
+
+                "The principal evidence consists of manuscripts, "
+                +
+                "inscriptions, administrative fragments and "
+                +
+                "later commentary. Several sources were copied "
+                +
+                "long after the events they describe."
+            ],
+
+            [
+                "Competing interpretations",
+
+                scholar +
+                " argues that the conventional interpretation "
+                +
+                "gives too much weight to later chronicles. "
+                +
+                "Other researchers place greater importance on "
+                +
+                "administrative evidence."
+            ],
+
+            [
+                "Unresolved questions",
+
+                "Several references imply that additional "
+                +
+                "records once existed. None has been conclusively "
+                +
+                "recovered."
+            ]
+
+        ],
+
+        questions:
+            uniqueRandomFrom(
+                [
+                    "Who created it?",
+                    "When did it appear?",
+                    "Where did it originate?",
+                    "Why did it become important?",
+                    "How did it change over time?",
+                    "Who opposed it?",
+                    "What evidence survives?",
+                    "What remains uncertain?",
+                    "Which sources disagree?",
+                    "What happened afterward?",
+                    "How does it connect to other events?",
+                    "Which interpretations are disputed?"
+                ],
+                6
+            ),
+
+        related: related,
+
+        source: randomFrom([
+            "Administrative Records of the Northern Provinces",
+            "Notes on Early Elarian Chronology",
+            "The Northern Annals",
+            "Archaeological Survey of the Kareth Basin",
+            "Political Institutions of Early Taryn",
+            "The Seven Calendars",
+            "Studies in Imperial Succession",
+            "Fragments of the Old Chronicle",
+            "The Ashen Historical Register"
+        ]),
+
+        source_status:
+            randomFrom([
+                "Reconstructed",
+                "Partially preserved",
+                "Disputed",
+                "Incomplete",
+                "Uncertain"
+            ])
+    }};
+
+}}
+
+
+// ============================================================
+// ARTICLE RENDERING
+// ============================================================
+
+function renderArticle(article) {{
+
+    memory.currentArticle = article;
+
+    memory.discoveryCount += 1;
+
+    remember(article.title);
+
+    const container =
+        $("#articleContainer");
+
+    container.innerHTML = "";
+
+    const wrapper =
+        createElement(
+            "div",
+            "article-layout"
+        );
+
+    const main =
+        createElement(
+            "div",
+            "article-main"
+        );
+
+    const header =
+        createElement(
+            "header",
+            "article-header"
+        );
+
+    const kicker =
+        createElement(
+            "div",
+            "article-kicker",
+            article.type
+        );
+
+    const title =
+        createElement(
+            "h2",
+            "article-title",
+            article.title
+        );
+
+    const subtitle =
+        createElement(
+            "div",
+            "article-subtitle",
+            article.subtitle
+        );
+
+    header.appendChild(kicker);
+    header.appendChild(title);
+    header.appendChild(subtitle);
+
+    main.appendChild(header);
+
+
+    const opening =
+        createElement(
+            "div",
+            "article-opening",
+            article.opening
+        );
+
+    main.appendChild(opening);
+
+
+    article.sections.forEach(section => {{
+
+        const block =
+            createElement(
+                "section",
+                "article-section"
+            );
+
+        const heading =
+            createElement(
+                "h2",
+                "",
+                section[0]
+            );
+
+        const paragraph =
+            createElement(
+                "p",
+                "",
+                section[1]
+            );
+
+        block.appendChild(heading);
+        block.appendChild(paragraph);
+
+        main.appendChild(block);
+
+    }});
+
+
+    const aside =
+        createElement(
+            "aside",
+            "article-aside"
+        );
+
+
+    const metaCard =
+        createElement(
+            "div",
+            "aside-card"
+        );
+
+    const metaTitle =
+        createElement(
+            "div",
+            "aside-title",
+            "Record"
+        );
+
+    metaCard.appendChild(metaTitle);
+
+
+    [
+        ["World", article.world],
+        ["Date", article.year],
+        ["Recorded by", article.author],
+        ["Source", article.source],
+        ["Status", article.source_status]
+    ].forEach(item => {{
+
+        const row =
+            createElement(
+                "div",
+                "question"
+            );
+
+        row.textContent =
+            item[0] +
+            ": " +
+            item[1];
+
+        metaCard.appendChild(row);
+
+    }});
+
+
+    aside.appendChild(metaCard);
+
+
+    const questionsCard =
+        createElement(
+            "div",
+            "aside-card"
+        );
+
+    const questionsTitle =
+        createElement(
+            "div",
+            "aside-title",
+            "Questions to investigate"
+        );
+
+    questionsCard.appendChild(
+        questionsTitle
+    );
+
+
+    article.questions.forEach(question => {{
+
+        const item =
+            createElement(
+                "div",
+                "question",
+                question
+            );
+
+        questionsCard.appendChild(item);
+
+    }});
+
+
+    aside.appendChild(
+        questionsCard
+    );
+
+
+    const relatedCard =
+        createElement(
+            "div",
+            "aside-card"
+        );
+
+    const relatedTitle =
+        createElement(
+            "div",
+            "aside-title",
+            "Related records"
+        );
+
+    relatedCard.appendChild(
+        relatedTitle
+    );
+
+
+    const relatedContainer =
+        createElement(
+            "div",
+            "related"
+        );
+
+
+    article.related.forEach(name => {{
+
+        const button =
+            createElement(
+                "button",
+                "",
+                name
+            );
+
+        button.type = "button";
+
+        button.addEventListener(
+            "click",
+            () => discoverByName(name)
+        );
+
+        relatedContainer.appendChild(
+            button
+        );
+
+    }});
+
+
+    relatedCard.appendChild(
+        relatedContainer
+    );
+
+    aside.appendChild(
+        relatedCard
+    );
+
+
+    wrapper.appendChild(main);
+    wrapper.appendChild(aside);
+
+    container.appendChild(wrapper);
+
+    updateArchiveState();
+
+    window.scrollTo({{
+        top: 0,
+        behavior: "smooth"
+    }});
+}}
+
+
+// ============================================================
+// RECORD LOOKUP
+// ============================================================
+
+function findRecord(name) {{
+
+    let result =
+        ARCHIVE_DATA.worlds.find(
+            x => x.name === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "world",
+            data: result
+        }};
+    }}
+
+
+    result =
+        ARCHIVE_DATA.characters.find(
+            x => x.name === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "character",
+            data: result
+        }};
+    }}
+
+
+    result =
+        ARCHIVE_DATA.events.find(
+            x => x.name === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "event",
+            data: result
+        }};
+    }}
+
+
+    result =
+        ARCHIVE_DATA.factions.find(
+            x => x.name === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "faction",
+            data: result
+        }};
+    }}
+
+
+    result =
+        ARCHIVE_DATA.artifacts.find(
+            x => x.name === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "artifact",
+            data: result
+        }};
+    }}
+
+
+    result =
+        ARCHIVE_DATA.documents.find(
+            x => x.title === name
+        );
+
+    if (result) {{
+        return {{
+            kind: "document",
+            data: result
+        }};
+    }}
+
+    return null;
+}}
+
+
+// ============================================================
+// RECORD ARTICLE BUILDERS
+// ============================================================
+
+function worldArticle(world) {{
+
+    const related =
+        ARCHIVE_DATA.events
+            .filter(
+                x => x.world === world.name
+            )
+            .map(
+                x => x.name
+            )
+            .slice(0, 4);
+
+    return {{
+        title: world.name,
+
+        subtitle:
+            world.type +
+            " · " +
+            world.era,
+
+        type: "World",
+
+        world: world.name,
+
+        year: world.founded,
+
+        author: "Archive reconstruction",
+
+        opening: world.description,
+
+        sections: [
+
+            [
+                "Geography",
+                world.name +
+                " contains the following recorded regions: " +
+                world.regions.join(", ") +
+                "."
+            ],
+
+            [
+                "Political structure",
+                "The surviving record describes the political "
+                +
+                "system as " +
+                world.government +
+                "."
+            ],
+
+            [
+                "Economy",
+                "Historical reconstruction identifies " +
+                world.currency +
+                " as the principal recorded currency."
+            ],
+
+            [
+                "Language",
+                "The principal recorded language is " +
+                world.language +
+                "."
+            ],
+
+            [
+                "Historical questions",
+                "The dates associated with the foundation and "
+                +
+                "later development remain subject to "
+                +
+                "interpretation."
+            ]
+
+        ],
+
+        questions: [
+            "When was the world established?",
+            "Who ruled it?",
+            "What languages were spoken?",
+            "How did its political system function?",
+            "What caused major historical changes?",
+            "Which records survive?"
+        ],
+
+        related:
+            related.length
+                ? related
+                : ["Random Discovery"],
+
+        source: "World reconstruction archive",
+
+        source_status: "Original fictional setting"
+    }};
+}}
+
+
+function characterArticle(character) {{
+
+    return {{
+
+        title: character.name,
+
+        subtitle:
+            character.role +
+            " · " +
+            character.world,
+
+        type: "Character",
+
+        world: character.world,
+
+        year: character.period,
+
+        author: "Character archive",
+
+        opening: character.description,
+
+        sections: [
+
+            [
+                "Role",
+                character.name +
+                " is recorded as a " +
+                character.role +
+                " in the fictional historical archive."
+            ],
+
+            [
+                "Historical context",
+                "The character is associated with " +
+                character.world +
+                " and the period " +
+                character.period +
+                "."
+            ],
+
+            [
+                "Recorded legacy",
+                "Later records interpret the figure differently, "
+                +
+                "particularly when discussing political "
+                +
+                "responsibility."
+            ],
+
+            [
+                "Sources",
+                "References include fictional chronicles, later "
+                +
+                "historical commentary and reconstructed records."
+            ]
+
+        ],
+
+        questions: [
+            "Who was this person?",
+            "What did they change?",
+            "Who opposed them?",
+            "What sources mention them?",
+            "When did they disappear from the record?",
+            "How reliable are the accounts?"
+        ],
+
+        related: [
+            character.world,
+            ...ARCHIVE_DATA.events
+                .filter(
+                    x => x.world === character.world
+                )
+                .map(
+                    x => x.name
+                )
+                .slice(0, 2)
+        ],
+
+        source: "Biographical archive",
+
+        source_status: "Reconstructed"
+    }};
+}}
+
+
+function eventArticle(event) {{
+
+    return {{
+
+        title: event.name,
+
+        subtitle:
+            event.type +
+            " · " +
+            event.world,
+
+        type: "Historical Event",
+
+        world: event.world,
+
+        year: event.year,
+
+        author: "Historical event register",
+
+        opening: event.description,
+
+        sections: [
+
+            [
+                "Event classification",
+                event.name +
+                " is catalogued as a " +
+                event.type +
+                " within the historical records of " +
+                event.world +
+                "."
+            ],
+
+            [
+                "Historical record",
+                "Accounts of the event vary between surviving "
+                +
+                "regional and institutional records."
+            ],
+
+            [
+                "Consequences",
+                "Later documents associate the event with changes "
+                +
+                "in political organization, population movement "
+                +
+                "or cultural memory."
+            ],
+
+            [
+                "Source criticism",
+                "Some accounts were preserved considerably later "
+                +
+                "than the event itself, making chronology an "
+                +
+                "important unresolved issue."
+            ]
+
+        ],
+
+        questions: [
+            "When did the event occur?",
+            "Who participated?",
+            "What caused it?",
+            "Which records describe it?",
+            "What changed afterward?",
+            "Why do sources disagree?"
+        ],
+
+        related:
+            ARCHIVE_DATA.events
+                .filter(
+                    x =>
+                        x.world === event.world &&
+                        x.name !== event.name
+                )
+                .map(
+                    x => x.name
+                )
+                .slice(0, 4),
+
+        source: "Historical event register",
+
+        source_status: "Fictional reconstruction"
+    }};
+}}
+
+
+function factionArticle(faction) {{
+
+    return {{
+
+        title: faction.name,
+
+        subtitle:
+            faction.type +
+            " · " +
+            faction.world,
+
+        type: "Faction",
+
+        world: faction.world,
+
+        year: "Recorded period uncertain",
+
+        author: "Institutional archive",
+
+        opening: faction.description,
+
+        sections: [
+
+            [
+                "Organization",
+                faction.name +
+                " is classified as a " +
+                faction.type +
+                " within the records of " +
+                faction.world +
+                "."
+            ],
+
+            [
+                "Influence",
+                "The surviving material suggests that the "
+                +
+                "organization influenced political, commercial, "
+                +
+                "religious or military developments."
+            ],
+
+            [
+                "Membership",
+                "Individual membership lists are incomplete, "
+                +
+                "and several names appear only in later copies."
+            ],
+
+            [
+                "Historical uncertainty",
+                "The exact period and extent of the organization's "
+                +
+                "influence remain disputed."
+            ]
+
+        ],
+
+        questions: [
+            "Who founded it?",
+            "Who belonged to it?",
+            "What did it control?",
+            "Who opposed it?",
+            "Which documents mention it?",
+            "When did it disappear?"
+        ],
+
+        related: [
+            faction.world,
+            ...ARCHIVE_DATA.factions
+                .filter(
+                    x => x.name !== faction.name
+                )
+                .map(
+                    x => x.name
+                )
+                .slice(0, 3)
+        ],
+
+        source: "Institutional archive",
+
+        source_status: "Reconstructed"
+    }};
+}}
+
+
+function artifactArticle(artifact) {{
+
+    return {{
+
+        title: artifact.name,
+
+        subtitle:
+            artifact.classification +
+            " · " +
+            artifact.world,
+
+        type: "Artifact",
+
+        world: artifact.world,
+
+        year: "Date uncertain",
+
+        author: "Object catalogue",
+
+        opening: artifact.description,
+
+        sections: [
+
+            [
+                "Classification",
+                artifact.name +
+                " is catalogued as a " +
+                artifact.classification +
+                "."
+            ],
+
+            [
+                "Provenance",
+                "The documented chain of ownership is incomplete. "
+                +
+                "Several references appear in later inventories."
+            ],
+
+            [
+                "Physical record",
+                "Descriptions differ between catalogues, leaving "
+                +
+                "open questions concerning the object's original "
+                +
+                "appearance and purpose."
+            ],
+
+            [
+                "Authenticity",
+                "No single surviving record conclusively resolves "
+                +
+                "the question of authenticity."
+            ]
+
+        ],
+
+        questions: [
+            "Who created it?",
+            "Where was it found?",
+            "What was it used for?",
+            "Who owned it?",
+            "Is it authentic?",
+            "Where is it now?"
+        ],
+
+        related: [
+            artifact.world,
+            ...ARCHIVE_DATA.artifacts
+                .filter(
+                    x => x.name !== artifact.name
+                )
+                .map(
+                    x => x.name
+                )
+                .slice(0, 3)
+        ],
+
+        source: "Object catalogue",
+
+        source_status: "Authenticity disputed"
+    }};
+}}
+
+
+function documentArticle(document) {{
+
+    return {{
+
+        title: document.title,
+
+        subtitle:
+            document.type +
+            " · " +
+            document.world,
+
+        type: "Document",
+
+        world: document.world,
+
+        year: document.date,
+
+        author: "Document archive",
+
+        opening: document.excerpt,
+
+        sections: [
+
+            [
+                "Document description",
+                document.title +
+                " is catalogued as a " +
+                document.type +
+                " associated with " +
+                document.world +
+                "."
+            ],
+
+            [
+                "Preservation",
+                "The archive classifies the document as " +
+                document.status.toLowerCase() +
+                "."
+            ],
+
+            [
+                "Historical value",
+                "The document provides evidence for reconstructing "
+                +
+                "administrative, political, cultural or military "
+                +
+                "history."
+            ],
+
+            [
+                "Limitations",
+                "The surviving text is insufficient to establish "
+                +
+                "every detail independently."
+            ]
+
+        ],
+
+        questions: [
+            "Who wrote it?",
+            "When was it written?",
+            "Who preserved it?",
+            "What information does it contain?",
+            "What is missing?",
+            "Can it be independently verified?"
+        ],
+
+        related: [
+            document.world,
+            ...ARCHIVE_DATA.documents
+                .filter(
+                    x => x.title !== document.title
+                )
+                .map(
+                    x => x.title
+                )
+                .slice(0, 3)
+        ],
+
+        source: "Document archive",
+
+        source_status: document.status
+    }};
+}}
+
+
+// ============================================================
+// DISCOVERY BY NAME
+// ============================================================
+
+function discoverByName(name) {{
+
+    const record =
+        findRecord(name);
+
+    if (!record) {{
+
+        if (name === "Random Discovery") {{
+            discoverRandom();
+            return;
+        }}
+
+        discoverRandom();
+        return;
+    }}
+
+
+    let article;
+
+    if (record.kind === "world") {{
+        article = worldArticle(record.data);
+    }}
+
+    if (record.kind === "character") {{
+        article = characterArticle(record.data);
+    }}
+
+    if (record.kind === "event") {{
+        article = eventArticle(record.data);
+    }}
+
+    if (record.kind === "faction") {{
+        article = factionArticle(record.data);
+    }}
+
+    if (record.kind === "artifact") {{
+        article = artifactArticle(record.data);
+    }}
+
+    if (record.kind === "document") {{
+        article = documentArticle(record.data);
+    }}
+
+    renderArticle(article);
+
+    closeMenu();
+}}
+
+
+// ============================================================
+// RANDOM DISCOVERY
+// ============================================================
+
+function discoverRandom() {{
+
+    let article;
+
+    for (let attempt = 0; attempt < 8; attempt++) {{
+
+        article =
+            generateRandomArticle();
+
+        if (
+            !memory.seen.includes(
+                article.title
+            )
+        {{
+            break;
+        }}
+    }}
+
+    renderArticle(article);
+}}
+
+
+// ============================================================
+// SEARCH INDEX
+// ============================================================
+
+function buildSearchIndex() {{
+
+    const index = [];
+
+    ARCHIVE_DATA.worlds.forEach(item => {{
+
+        index.push({{
+            name: item.name,
+            category: "World",
+            searchable:
+                item.name +
+                " " +
+                item.type +
+                " " +
+                item.description
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.characters.forEach(item => {{
+
+        index.push({{
+            name: item.name,
+            category: "Character",
+            searchable:
+                item.name +
+                " " +
+                item.world +
+                " " +
+                item.role +
+                " " +
+                item.description
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.events.forEach(item => {{
+
+        index.push({{
+            name: item.name,
+            category: "Historical Event",
+            searchable:
+                item.name +
+                " " +
+                item.world +
+                " " +
+                item.type +
+                " " +
+                item.description
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.factions.forEach(item => {{
+
+        index.push({{
+            name: item.name,
+            category: "Faction",
+            searchable:
+                item.name +
+                " " +
+                item.world +
+                " " +
+                item.type +
+                " " +
+                item.description
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.artifacts.forEach(item => {{
+
+        index.push({{
+            name: item.name,
+            category: "Artifact",
+            searchable:
+                item.name +
+                " " +
+                item.world +
+                " " +
+                item.classification +
+                " " +
+                item.description
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.documents.forEach(item => {{
+
+        index.push({{
+            name: item.title,
+            category: "Document",
+            searchable:
+                item.title +
+                " " +
+                item.world +
+                " " +
+                item.type +
+                " " +
+                item.excerpt
+        }});
+
+    }});
+
+
+    ARCHIVE_DATA.canonGroups.forEach(group => {{
+
+        group.items.forEach(item => {{
+
+            index.push({{
+                name: item,
+                category: group.name,
+                searchable:
+                    item +
+                    " " +
+                    group.name
+            }});
 
         }});
 
-        typeNav.appendChild(button);
+    }});
+
+
+    return index;
+}}
+
+
+const SEARCH_INDEX =
+    buildSearchIndex();
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+function performSearch(query) {{
+
+    const container =
+        $("#searchResults");
+
+    query =
+        query
+            .trim()
+            .toLowerCase();
+
+    memory.searchTerm =
+        query;
+
+    if (!query) {{
+
+        container.hidden = true;
+        container.innerHTML = "";
+
+        return;
+    }}
+
+
+    const results =
+        SEARCH_INDEX
+            .filter(
+                item =>
+                    item.searchable
+                        .toLowerCase()
+                        .includes(query)
+            )
+            .slice(0, 14);
+
+
+    container.innerHTML = "";
+
+
+    if (!results.length) {{
+
+        container.appendChild(
+            createElement(
+                "div",
+                "empty",
+                "No matching archive record."
+            )
+        );
+
+    }} else {{
+
+        results.forEach(result => {{
+
+            const row =
+                createElement(
+                    "div",
+                    "search-result"
+                );
+
+            const title =
+                createElement(
+                    "strong",
+                    "",
+                    result.name
+                );
+
+            const category =
+                createElement(
+                    "small",
+                    "",
+                    result.category
+                );
+
+            row.appendChild(title);
+            row.appendChild(category);
+
+            row.addEventListener(
+                "click",
+                () => {{
+
+                    discoverByName(
+                        result.name
+                    );
+
+                    $("#searchInput").value = "";
+
+                    container.hidden = true;
+                }}
+            );
+
+            container.appendChild(row);
+
+        }});
+
+    }}
+
+    container.hidden = false;
+}}
+
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+function buildNavigation() {{
+
+    const worldNav =
+        $("#worldNav");
+
+    ARCHIVE_DATA.worlds.forEach(
+        world => {{
+
+            const button =
+                createElement(
+                    "button",
+                    "nav-item",
+                    world.name
+                );
+
+            button.type = "button";
+
+            button.addEventListener(
+                "click",
+                () =>
+                    discoverByName(
+                        world.name
+                    )
+            );
+
+            worldNav.appendChild(
+                button
+            );
+
+        }}
+    );
+
+
+    const canonNav =
+        $("#canonNav");
+
+    ARCHIVE_DATA.canonGroups.forEach(
+        group => {{
+
+            const button =
+                createElement(
+                    "button",
+                    "nav-item",
+                    group.name
+                );
+
+            button.type = "button";
+
+            button.addEventListener(
+                "click",
+                () =>
+                    showReferenceCollection(
+                        group.name
+                    )
+            );
+
+            canonNav.appendChild(
+                button
+            );
+
+        }}
+    );
+
+
+    const typeNav =
+        $("#typeNav");
+
+    [
+        "Civilization",
+        "Character",
+        "Historical Event",
+        "Faction",
+        "Artifact",
+        "Document",
+        "Battle",
+        "Political System",
+        "Religion",
+        "Technology",
+        "Location",
+        "Historical Mystery",
+        "Cosmic Event"
+    ].forEach(type => {{
+
+        const button =
+            createElement(
+                "button",
+                "nav-item",
+                type
+            );
+
+        button.type = "button";
+
+        button.addEventListener(
+            "click",
+            () =>
+                showTypeCollection(type)
+        );
+
+        typeNav.appendChild(
+            button
+        );
 
     }});
 }}
@@ -2864,45 +3791,89 @@ function buildNavigation() {{
 // REFERENCE COLLECTION
 // ============================================================
 
-function showReferenceCollection(groupName, item) {{
+function showReferenceCollection(
+    groupName
+) {{
+
+    const group =
+        ARCHIVE_DATA.canonGroups.find(
+            x => x.name === groupName
+        );
+
+    if (!group) {{
+        discoverRandom();
+        return;
+    }}
+
+
+    const item =
+        randomFrom(group.items);
+
 
     renderArticle({{
+
         title: item,
-        subtitle: groupName + " reference",
-        type: "Reference entry",
+
+        subtitle:
+            groupName +
+            " reference",
+
+        type: "Reference Entry",
+
         world: groupName,
+
         year: "Published fictional universe",
-        author: "Reference index",
+
+        author: "Reference Index",
 
         opening:
             item +
             " is indexed here as part of the " +
             groupName +
-            " collection. This section is a reference/navigation " +
-            "entry and does not create new official canon.",
+            " collection. This section is a "
+            +
+            "reference/navigation entry and does not "
+            +
+            "create new official canon.",
 
         sections: [
+
             [
                 "Scope",
-                "The archive records the work or category so that " +
-                "readers can navigate related fictional material."
+                "The archive records the work or category "
+                +
+                "so that readers can navigate related "
+                +
+                "fictional material."
             ],
+
             [
                 "Canon boundary",
-                "Published canon should be distinguished from fan " +
-                "interpretation, original fiction and alternate-universe " +
-                "material."
+                "Published canon should be distinguished "
+                +
+                "from fan interpretation, original fiction "
+                +
+                "and alternate-universe material."
             ],
-            [
-                "Related exploration",
-                "Use the search system to discover other entries or " +
-                "return to the original fictional archive."
-            ],
+
             [
                 "Archive note",
-                "This site does not claim that its original fictional " +
-                "records are official material from the referenced work."
+                "This site does not claim that its original "
+                +
+                "fictional records are official material "
+                +
+                "from the referenced work."
+            ],
+
+            [
+                "Further research",
+                "Consult the official publications and "
+                +
+                "licensed source material when establishing "
+                +
+                "actual canon."
             ]
+
         ],
 
         questions: [
@@ -2914,17 +3885,17 @@ function showReferenceCollection(groupName, item) {{
             "Which entries are fan-created?"
         ],
 
-        related: [
-            ...groupName === "DC"
-                ? ["Batman", "Superman", "Justice League"]
-                : groupName === "Marvel"
-                ? ["Spider-Man", "Avengers", "X-Men"]
-                : ["Original Worlds", "Random discovery", "Historical timeline"]
-        ],
+        related:
+            group.items
+                .filter(
+                    x => x !== item
+                )
+                .slice(0, 4),
 
         source: "Reference index",
 
         source_status: "Reference / navigation"
+
     }});
 
     closeMenu();
@@ -2938,11 +3909,17 @@ function showReferenceCollection(groupName, item) {{
 function showTypeCollection(type) {{
 
     const possible = [
+
         ...ARCHIVE_DATA.events,
+
         ...ARCHIVE_DATA.characters,
+
         ...ARCHIVE_DATA.factions,
+
         ...ARCHIVE_DATA.artifacts
+
     ];
+
 
     const matching =
         possible.filter(item => {{
@@ -2955,16 +3932,21 @@ function showTypeCollection(type) {{
 
             return itemType
                 .toLowerCase()
-                .includes(type.toLowerCase());
+                .includes(
+                    type.toLowerCase()
+                );
 
         }});
+
 
     if (matching.length) {{
 
         const item =
-            matching[Math.floor(Math.random() * matching.length)];
+            randomFrom(matching);
 
-        discoverByName(item.name);
+        discoverByName(
+            item.name
+        );
 
     }} else {{
 
@@ -2977,33 +3959,135 @@ function showTypeCollection(type) {{
 
 
 // ============================================================
+// TIMELINE
+// ============================================================
+
+function buildTimeline() {{
+
+    const container =
+        $("#timelineGrid");
+
+    container.innerHTML = "";
+
+
+    const records =
+        [
+            ...ARCHIVE_DATA.events
+        ]
+        .sort(
+            () => Math.random() - .5
+        )
+        .slice(0, 6);
+
+
+    records.forEach(event => {{
+
+        const card =
+            createElement(
+                "article",
+                "timeline-card"
+            );
+
+        const year =
+            createElement(
+                "div",
+                "timeline-year",
+                event.year
+            );
+
+        const title =
+            createElement(
+                "h3",
+                "",
+                event.name
+            );
+
+        const description =
+            createElement(
+                "p",
+                "",
+                event.description
+            );
+
+        card.appendChild(year);
+        card.appendChild(title);
+        card.appendChild(description);
+
+        card.addEventListener(
+            "click",
+            () =>
+                discoverByName(
+                    event.name
+                )
+        );
+
+        container.appendChild(
+            card
+        );
+
+    }});
+}}
+
+
+// ============================================================
 // MENU
 // ============================================================
 
 function openMenu() {{
 
-    document.body.classList.add("menu-open");
+    document.body.classList.add(
+        "menu-open"
+    );
 
     memory.menuOpen = true;
+
+    $("#menuButton").setAttribute(
+        "aria-expanded",
+        "true"
+    );
 
     $("#menuButton").setAttribute(
         "aria-label",
         "Close navigation"
     );
-
 }}
+
 
 function closeMenu() {{
 
-    document.body.classList.remove("menu-open");
+    document.body.classList.remove(
+        "menu-open"
+    );
 
     memory.menuOpen = false;
+
+    $("#menuButton").setAttribute(
+        "aria-expanded",
+        "false"
+    );
 
     $("#menuButton").setAttribute(
         "aria-label",
         "Open navigation"
     );
+}}
 
+
+// ============================================================
+// ARCHIVE STATUS
+// ============================================================
+
+function updateArchiveState() {{
+
+    const element =
+        $("#archiveState");
+
+    element.textContent =
+        memory.discoveryCount > 0
+            ? "Active · " +
+              memory.discoveryCount +
+              " discoveries"
+            : "Active";
 }}
 
 
@@ -3013,13 +4097,24 @@ function closeMenu() {{
 
 $("#searchInput").addEventListener(
     "input",
-    event => performSearch(event.target.value)
+    event =>
+        performSearch(
+            event.target.value
+        )
 );
+
 
 $("#randomButton").addEventListener(
     "click",
     discoverRandom
 );
+
+
+$("#heroDiscover").addEventListener(
+    "click",
+    discoverRandom
+);
+
 
 $("#menuButton").addEventListener(
     "click",
@@ -3034,45 +4129,61 @@ $("#menuButton").addEventListener(
     }}
 );
 
+
 $("#overlay").addEventListener(
     "click",
     closeMenu
 );
 
-document.querySelectorAll(
-    "[data-action]"
-).forEach(button => {{
 
-    button.addEventListener(
-        "click",
-        () => {{
+document
+    .querySelectorAll(
+        "[data-action]"
+    )
+    .forEach(button => {{
 
-            const action =
-                button.dataset.action;
+        button.addEventListener(
+            "click",
+            () => {{
 
-            if (action === "random") {{
-                discoverRandom();
+                const action =
+                    button.dataset.action;
+
+
+                if (
+                    action === "random"
+                ) {{
+                    discoverRandom();
+                }}
+
+
+                if (
+                    action === "home"
+                ) {{
+                    window.scrollTo({{
+                        top: 0,
+                        behavior: "smooth"
+                    }});
+                }}
+
+
+                if (
+                    action === "timeline"
+                ) {{
+                    $("#timelineSection")
+                        .scrollIntoView({{
+                            behavior: "smooth"
+                        }});
+                }}
+
+
+                closeMenu();
+
             }}
+        );
 
-            if (action === "home") {{
-                window.scrollTo({{
-                    top: 0,
-                    behavior: "smooth"
-                }});
-            }}
+    }});
 
-            if (action === "timeline") {{
-                $("#timelineSection").scrollIntoView({{
-                    behavior: "smooth"
-                }});
-            }}
-
-            closeMenu();
-
-        }}
-    );
-
-}});
 
 document.addEventListener(
     "keydown",
@@ -3080,7 +4191,8 @@ document.addEventListener(
 
         if (
             event.key === "/" &&
-            document.activeElement.tagName !== "INPUT"
+            document.activeElement.tagName !== "INPUT" &&
+            document.activeElement.tagName !== "TEXTAREA"
         ) {{
 
             event.preventDefault();
@@ -3089,26 +4201,38 @@ document.addEventListener(
 
         }}
 
-        if (event.key === "Escape") {{
+
+        if (
+            event.key === "Escape"
+        ) {{
 
             closeMenu();
 
-            $("#searchResults").hidden = true;
+            $("#searchResults").hidden =
+                true;
 
         }}
 
     }}
 );
 
+
 document.addEventListener(
     "click",
     event => {{
 
         const search =
-            document.querySelector(".search");
+            document.querySelector(
+                ".search"
+            );
 
-        if (!search.contains(event.target)) {{
-            $("#searchResults").hidden = true;
+        if (
+            !search.contains(
+                event.target
+            )
+        ) {{
+            $("#searchResults").hidden =
+                true;
         }}
 
     }}
@@ -3121,7 +4245,11 @@ document.addEventListener(
 
 buildNavigation();
 
-renderArticle(INITIAL_ARTICLE);
+buildTimeline();
+
+renderArticle(
+    INITIAL_ARTICLE
+);
 
 </script>
 
@@ -3129,16 +4257,17 @@ renderArticle(INITIAL_ARTICLE);
 </html>
 """
 
-    return html_document
-
 
 # ============================================================
-# GENERATE FILE
+# GENERATE SITE
 # ============================================================
 
 def main():
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     document = build_html()
 
@@ -3148,14 +4277,13 @@ def main():
     )
 
     print()
-    print("=" * 60)
+    print("=" * 64)
     print("FORBIDDEN LORE WIKI GENERATED")
-    print("=" * 60)
+    print("=" * 64)
     print()
     print(f"Output: {OUTPUT_FILE.resolve()}")
     print()
-    print("Generated as a SINGLE static HTML file.")
-    print()
+    print("Single static HTML file")
     print("No database")
     print("No localStorage")
     print("No sessionStorage")
@@ -3163,8 +4291,8 @@ def main():
     print("No backend")
     print("Browser memory only")
     print()
-    print("Open:")
-    print(f"  {OUTPUT_FILE}")
+    print("Render publish directory:")
+    print("site")
     print()
 
 
