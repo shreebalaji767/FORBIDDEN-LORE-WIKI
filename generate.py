@@ -4882,8 +4882,7 @@ def main():
     )
 
 
-    output =
-        build_html()
+    output = build_html()
 
 
     OUTPUT_FILE.write_text(
